@@ -20,8 +20,23 @@ class __HomeMobileState extends State<_HomeMobile> {
   bool _keyboardVisible = false;
   Timer _debounce;
   int _listener;
+  ItemProvider _itemProvider = ItemProvider();
+  Item _currentItem;
+
   @protected
   void initState() {
+    _itemProvider.open().then((_) async {
+      print('open database');
+      List<Item> items = await _itemProvider.getItems();
+      if (items.isEmpty) {
+        await _createNewNote();
+      } else {
+        setState(() {
+          _currentItem = items.first;
+        });
+        _setCurrentItemToController();
+      }
+    });
     super.initState();
 
     _listener = KeyboardVisibilityNotification().addNewListener(
@@ -34,6 +49,7 @@ class __HomeMobileState extends State<_HomeMobile> {
 
   @override
   void dispose() {
+    _itemProvider.close().then((_) {});
     if (_debounce != null) {
       _debounce.cancel();
       _debounce = null;
@@ -56,6 +72,11 @@ class __HomeMobileState extends State<_HomeMobile> {
     _debounce = Timer(const Duration(milliseconds: 300), () {
       print(titleController.text);
       print(noteController.text);
+      setState(() {
+        _currentItem.title = titleController.text;
+        _currentItem.note = noteController.text;
+      });
+      _itemProvider.update(_currentItem);
     });
   }
 
@@ -103,6 +124,13 @@ class __HomeMobileState extends State<_HomeMobile> {
         ),
         backgroundColor: Colors.black,
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.data_usage),
+            onPressed: () async {
+              List list = await _itemProvider.getItems();
+              print(list);
+            },
+          ),
           IconButton(
             icon: Icon(Icons.add),
             onPressed: _createNewNote,
@@ -160,11 +188,19 @@ class __HomeMobileState extends State<_HomeMobile> {
     );
   }
 
-  void _createNewNote() {
-    // TODO: 저장해야함
+  Future<Item> _createNewNote() async {
     titleController.text = '';
     noteController.text = '';
-    titleFocusNode.requestFocus();
+    Item newItem = Item();
+    newItem.title = _nowString();
+    newItem.note = '';
+    Item item = await _itemProvider.create(newItem);
+    setState(() {
+      _currentItem = item;
+    });
+    _setCurrentItemToController();
+    noteFocusNode.requestFocus();
+    return item;
   }
 
   String _nowString() {
@@ -172,6 +208,11 @@ class __HomeMobileState extends State<_HomeMobile> {
     List<String> format = [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn, ' ', am];
     String nowString = formatDate(now, format);
     return nowString;
+  }
+
+  void _setCurrentItemToController() {
+    titleController.text = _currentItem.title;
+    noteController.text = _currentItem.note;
   }
 }
 
@@ -195,7 +236,7 @@ class TitleTextField extends StatelessWidget {
       child: TextField(
         controller: controller,
         focusNode: titleFocusNode,
-        autofocus: true,
+        autofocus: false,
         cursorColor: Colors.black,
         enableSuggestions: false,
         textAlign: TextAlign.center,

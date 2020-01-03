@@ -203,6 +203,9 @@ class NoteList extends StatelessWidget {
         initialChildSize: 0.08,
         minChildSize: 0.08,
         builder: (context, scrollController) {
+          scrollController.addListener(() {
+            // TODO: 스크롤 포지션에 따라 opacity를 변경해야함
+          });
           return Container(
             child: ListView.builder(
               controller: scrollController,

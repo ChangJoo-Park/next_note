@@ -41,6 +41,29 @@ class __HomeMobileState extends State<_HomeMobile> {
         title: GestureDetector(
           onTap: () {
             debugPrint('onTap');
+            showDialog(
+                context: context,
+                builder: (BuildContext ctx) {
+                  return SimpleDialog(
+                    title: Text('NextNote'),
+                    children: <Widget>[
+                      SimpleDialogOption(
+                        child: ListTile(
+                          leading: Icon(FontAwesomeIcons.info),
+                          title: Text('About'),
+                        ),
+                        onPressed: () {},
+                      ),
+                      SimpleDialogOption(
+                        child: ListTile(
+                          leading: Icon(FontAwesomeIcons.trashAlt),
+                          title: Text('Trash'),
+                        ),
+                        onPressed: () {},
+                      ),
+                    ],
+                  );
+                });
           },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,

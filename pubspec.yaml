@@ -19,6 +19,7 @@ dependencies:
             branch: androidx
     double_back_to_close_app: ^0.1.2
     date_format: ^1.0.8
+    font_awesome_flutter: ^8.5.0
 
 dev_dependencies:
     flutter_test:

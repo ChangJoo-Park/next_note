@@ -1,5 +1,6 @@
 library home_view;
 
+import 'package:date_format/date_format.dart';
 import 'package:flutter/services.dart';
 import 'package:provider_architecture/provider_architecture.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -15,17 +16,16 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     HomeViewModel viewModel = HomeViewModel();
     return ViewModelProvider<HomeViewModel>.withConsumer(
-      viewModel: viewModel,
-      onModelReady: (viewModel) {
-        // Do something once your viewModel is initialized
-      },
-      builder: (context, viewModel, child) {
-        return ScreenTypeLayout(
-          mobile: _HomeMobile(viewModel),
-          desktop: _HomeDesktop(viewModel),
-          tablet: _HomeTablet(viewModel),  
-        );
-      }
-    );
+        viewModel: viewModel,
+        onModelReady: (viewModel) {
+          // Do something once your viewModel is initialized
+        },
+        builder: (context, viewModel, child) {
+          return ScreenTypeLayout(
+            mobile: _HomeMobile(viewModel),
+            desktop: _HomeDesktop(viewModel),
+            tablet: _HomeTablet(viewModel),
+          );
+        });
   }
 }

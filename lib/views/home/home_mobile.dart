@@ -43,7 +43,7 @@ class __HomeMobileState extends State<_HomeMobile> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () {},
+            onPressed: _createNewNote,
           )
         ],
       ),
@@ -79,7 +79,10 @@ class __HomeMobileState extends State<_HomeMobile> {
                         },
                       ),
                       // Note
-                      NoteTextField(noteFocusNode: noteFocusNode),
+                      NoteTextField(
+                        noteFocusNode: noteFocusNode,
+                        controller: noteController,
+                      ),
                     ],
                   ),
                 ),
@@ -90,6 +93,13 @@ class __HomeMobileState extends State<_HomeMobile> {
         ),
       ),
     );
+  }
+
+  void _createNewNote() {
+    // TODO: 저장해야함
+    titleController.text = '';
+    noteController.text = '';
+    titleFocusNode.requestFocus();
   }
 
   String _nowString() {
@@ -161,15 +171,18 @@ class NoteTextField extends StatelessWidget {
   const NoteTextField({
     Key key,
     @required this.noteFocusNode,
+    @required this.controller,
   }) : super(key: key);
 
   final FocusNode noteFocusNode;
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       flex: 1,
       child: TextField(
+        controller: controller,
         focusNode: noteFocusNode,
         cursorColor: Colors.black,
         onEditingComplete: () {

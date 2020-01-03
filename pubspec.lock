@@ -112,9 +112,11 @@ packages:
   keyboard_visibility:
     dependency: "direct main"
     description:
-      name: keyboard_visibility
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "981f6794718654cb30b36e403505fe1ff502205b"
+      url: "git@github.com:ChangJoo-Park/flutter_keyboard_visibility.git"
+    source: git
     version: "0.5.6"
   logger:
     dependency: "direct main"

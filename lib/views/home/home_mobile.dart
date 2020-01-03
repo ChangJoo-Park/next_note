@@ -40,7 +40,6 @@ class __HomeMobileState extends State<_HomeMobile> {
       appBar: AppBar(
         title: GestureDetector(
           onTap: () {
-            debugPrint('onTap');
             showDialog(
                 context: context,
                 builder: (BuildContext ctx) {

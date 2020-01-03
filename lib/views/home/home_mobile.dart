@@ -46,6 +46,9 @@ class __HomeMobileState extends State<_HomeMobile> {
     setState(() {
       this._keyboardVisible = visible;
     });
+    if (!this._keyboardVisible) {
+      _onNoteChanged();
+    }
   }
 
   void _onNoteChanged() {

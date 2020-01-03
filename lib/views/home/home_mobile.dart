@@ -38,13 +38,27 @@ class __HomeMobileState extends State<_HomeMobile> {
     return Scaffold(
       resizeToAvoidBottomPadding: true,
       appBar: AppBar(
-        title: Text('NextNote'),
+        title: GestureDetector(
+          onTap: () {
+            debugPrint('onTap');
+          },
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Text('NextNote'),
+              SizedBox(width: 4.0),
+              Icon(Icons.keyboard_arrow_down),
+            ],
+          ),
+        ),
         backgroundColor: Colors.black,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),
             onPressed: _createNewNote,
-          )
+          ),
         ],
       ),
       body: DoubleBackToCloseApp(

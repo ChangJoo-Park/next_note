@@ -18,19 +18,42 @@ class __HomeMobileState extends State<_HomeMobile> {
       FocusNode(debugLabel: 'NOTE_FOCUS_NODE', canRequestFocus: true);
   final TextEditingController noteController = TextEditingController();
   bool _keyboardVisible = false;
-
+  Timer _debounce;
+  int _listener;
   @protected
   void initState() {
     super.initState();
 
-    KeyboardVisibilityNotification().addNewListener(
-      onChange: (bool visible) {
-        print('keyboard visible on change => $visible');
-        setState(() {
-          this._keyboardVisible = visible;
-        });
-      },
+    _listener = KeyboardVisibilityNotification().addNewListener(
+      onChange: _onKeyboardVisibility,
     );
+    titleFocusNode.addListener(() {
+      print('focus changed');
+    });
+  }
+
+  @override
+  void dispose() {
+    if (_debounce != null) {
+      _debounce.cancel();
+      _debounce = null;
+    }
+    KeyboardVisibilityNotification().removeListener(_listener);
+    super.dispose();
+  }
+
+  _onKeyboardVisibility(bool visible) {
+    setState(() {
+      this._keyboardVisible = visible;
+    });
+  }
+
+  void _onNoteChanged() {
+    if (_debounce?.isActive ?? false) _debounce.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      print(titleController.text);
+      print(noteController.text);
+    });
   }
 
   @override
@@ -100,7 +123,6 @@ class __HomeMobileState extends State<_HomeMobile> {
                 ),
                 child: Form(
                   key: _formKey,
-                  onChanged: () {},
                   child: Column(
                     children: <Widget>[
                       // Title
@@ -112,12 +134,16 @@ class __HomeMobileState extends State<_HomeMobile> {
                           if (value.isEmpty) {
                             titleController.text = _nowString();
                           }
+                          _onNoteChanged();
                         },
                       ),
                       // Note
                       NoteTextField(
                         noteFocusNode: noteFocusNode,
                         controller: noteController,
+                        valueChanged: (String value) {
+                          _onNoteChanged();
+                        },
                       ),
                     ],
                   ),
@@ -208,10 +234,12 @@ class NoteTextField extends StatelessWidget {
     Key key,
     @required this.noteFocusNode,
     @required this.controller,
+    @required this.valueChanged,
   }) : super(key: key);
 
   final FocusNode noteFocusNode;
   final TextEditingController controller;
+  final ValueChanged<String> valueChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -221,9 +249,6 @@ class NoteTextField extends StatelessWidget {
         controller: controller,
         focusNode: noteFocusNode,
         cursorColor: Colors.black,
-        onEditingComplete: () {
-          print('on editing complete');
-        },
         style: TextStyle(fontFamily: 'Monospace'),
         decoration: InputDecoration(
           hintText: "Insert your message",
@@ -233,6 +258,7 @@ class NoteTextField extends StatelessWidget {
         keyboardType: TextInputType.multiline,
         maxLines: 99999,
         autofocus: true,
+        onChanged: valueChanged,
       ),
     );
   }

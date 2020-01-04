@@ -143,42 +143,51 @@ class __HomeMobileState extends State<_HomeMobile> {
             fit: StackFit.expand,
             children: <Widget>[
               Container(
-                padding: EdgeInsets.only(
-                  bottom: 0.0,
-                  left: 8.0,
-                  right: 8.0,
-                  top: 0,
-                ),
                 child: widget.viewModel.currentItem == null
                     ? Center(child: CircularProgressIndicator())
-                    : Form(
-                        key: _formKey,
-                        child: Column(
-                          children: <Widget>[
-                            // Title
-                            TitleTextField(
-                              titleFocusNode: titleFocusNode,
-                              noteFocusNode: noteFocusNode,
-                              controller: titleController,
-                              valueChanged: (String value) {
-                                _onNoteChanged();
-                              },
+                    : PageView(
+                        children: <Widget>[
+                          Container(
+                            padding: EdgeInsets.all(8.0),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                children: <Widget>[
+                                  // Title
+                                  TitleTextField(
+                                    titleFocusNode: titleFocusNode,
+                                    noteFocusNode: noteFocusNode,
+                                    controller: titleController,
+                                    valueChanged: (String value) {
+                                      _onNoteChanged();
+                                    },
+                                  ),
+                                  // Note
+                                  NoteTextField(
+                                    noteFocusNode: noteFocusNode,
+                                    controller: noteController,
+                                    valueChanged: (String value) {
+                                      _onNoteChanged();
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
-                            // Note
-                            NoteTextField(
-                              noteFocusNode: noteFocusNode,
-                              controller: noteController,
-                              valueChanged: (String value) {
-                                _onNoteChanged();
-                              },
-                            ),
-                          ],
-                        ),
+                          ),
+                          Container(
+                            child: Markdown(
+                                styleSheetTheme:
+                                    MarkdownStyleSheetBaseTheme.platform,
+                                shrinkWrap: true,
+                                data:
+                                    '# ${titleController.text}\n${noteController.text}'),
+                          ),
+                        ],
                       ),
               ),
               _keyboardVisible || widget.viewModel.items == null
                   ? Container()
-                  : Padding(
+                  : Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: DraggableScrollableSheet(
                         expand: true,

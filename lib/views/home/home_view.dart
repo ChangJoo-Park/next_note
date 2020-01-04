@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:logger/logger.dart';

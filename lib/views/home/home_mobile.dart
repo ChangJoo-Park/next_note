@@ -120,14 +120,20 @@ class __HomeMobileState extends State<_HomeMobile> {
             children: <Widget>[
               Text('NextNote'),
               SizedBox(width: 4.0),
-              Icon(Icons.keyboard_arrow_down),
+              Icon(
+                FontAwesomeIcons.chevronDown,
+                size: 16,
+              ),
             ],
           ),
         ),
         backgroundColor: Colors.black,
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.add),
+            icon: Icon(
+              FontAwesomeIcons.plus,
+              size: 16,
+            ),
             onPressed: _createNewNote,
           ),
         ],
@@ -146,7 +152,11 @@ class __HomeMobileState extends State<_HomeMobile> {
                     : PageView(
                         children: <Widget>[
                           Container(
-                            padding: EdgeInsets.all(8.0),
+                            padding: EdgeInsets.only(
+                              left: 8.0,
+                              right: 8.0,
+                              bottom: 34.0,
+                            ),
                             child: Form(
                               key: _formKey,
                               child: Column(
@@ -161,12 +171,16 @@ class __HomeMobileState extends State<_HomeMobile> {
                                     },
                                   ),
                                   // Note
-                                  NoteTextField(
-                                    noteFocusNode: noteFocusNode,
-                                    controller: noteController,
-                                    valueChanged: (String value) {
-                                      _onNoteChanged();
-                                    },
+                                  ScrollConfiguration(
+                                    behavior: NoGlowScrollBehavior(),
+                                    child: NoteTextField(
+                                      noteFocusNode: noteFocusNode,
+                                      controller: noteController,
+                                      valueChanged: (String value) {
+                                        // TODO: handle by last
+                                        _onNoteChanged();
+                                      },
+                                    ),
                                   ),
                                 ],
                               ),
@@ -186,20 +200,87 @@ class __HomeMobileState extends State<_HomeMobile> {
               _keyboardVisible || widget.viewModel.items == null
                   ? BottomStickyActionBar(
                       children: <Widget>[
-                        BottomStickyActionItem(label: 'B', callback: () {}),
-                        BottomStickyActionItem(label: 'H', callback: () {}),
-                        BottomStickyActionItem(label: 'L', callback: () {}),
                         BottomStickyActionItem(
-                          label: 'C',
-                          callback: () {
-                            noteController.text += '\n - [ ] ';
-                            noteController.selection =
-                                TextSelection.fromPosition(
-                              TextPosition(
-                                offset: noteController.text.length,
-                              ),
-                            );
-                          },
+                          child: Icon(
+                            FontAwesomeIcons.bold,
+                            size: 16,
+                          ),
+                          callback: () => addCharacterAndMoveCaret(
+                            character: '****',
+                            offset: -2,
+                          ),
+                        ),
+                        BottomStickyActionItem(
+                          child: Icon(
+                            FontAwesomeIcons.italic,
+                            size: 16,
+                          ),
+                          callback: () => addCharacterAndMoveCaret(
+                            character: '****',
+                            offset: -2,
+                          ),
+                        ),
+                        BottomStickyActionItem(
+                          child: Icon(
+                            FontAwesomeIcons.underline,
+                            size: 16,
+                          ),
+                          callback: () => addCharacterAndMoveCaret(
+                            character: '****',
+                            offset: -2,
+                          ),
+                        ),
+                        BottomStickyActionItem(
+                          child: Icon(
+                            FontAwesomeIcons.strikethrough,
+                            size: 16,
+                          ),
+                          callback: () => addCharacterAndMoveCaret(
+                            character: '****',
+                            offset: -2,
+                          ),
+                        ),
+                        BottomStickyActionItem(
+                          child: Icon(
+                            FontAwesomeIcons.quoteLeft,
+                            size: 16,
+                          ),
+                          callback: () => addCharacterAndMoveCaret(
+                            character: '****',
+                            offset: -2,
+                          ),
+                        ),
+                        BottomStickyActionItem(
+                          child: Icon(
+                            FontAwesomeIcons.hashtag,
+                            size: 16,
+                          ),
+                          callback: () =>
+                              addCharacterAndMoveCaret(character: '#'),
+                        ),
+                        BottomStickyActionItem(
+                          child: Icon(
+                            FontAwesomeIcons.listUl,
+                            size: 16,
+                          ),
+                          callback: () =>
+                              addCharacterAndMoveCaret(character: '\n- '),
+                        ),
+                        BottomStickyActionItem(
+                          child: Icon(
+                            FontAwesomeIcons.listOl,
+                            size: 16,
+                          ),
+                          callback: () =>
+                              addCharacterAndMoveCaret(character: '\n- '),
+                        ),
+                        BottomStickyActionItem(
+                          child: Icon(
+                            FontAwesomeIcons.checkSquare,
+                            size: 16,
+                          ),
+                          callback: () =>
+                              addCharacterAndMoveCaret(character: '\n- [ ] '),
                         ),
                       ],
                     )
@@ -301,6 +382,16 @@ class __HomeMobileState extends State<_HomeMobile> {
     titleController.text = widget.viewModel.currentItem.title;
     noteController.text = widget.viewModel.currentItem.note;
   }
+
+  // TODO: Add caret control
+  void addCharacterAndMoveCaret({String character, int offset = 0}) {
+    noteController.text += character;
+    noteController.selection = TextSelection.fromPosition(
+      TextPosition(
+        offset: noteController.text.length + offset,
+      ),
+    );
+  }
 }
 
 class TitleTextField extends StatelessWidget {
@@ -390,6 +481,9 @@ class NoteTextField extends StatelessWidget {
         maxLines: 99999,
         autofocus: false,
         onChanged: valueChanged,
+        onEditingComplete: () {
+          debugPrint('onEditingCompleted');
+        },
       ),
     );
   }
@@ -421,9 +515,9 @@ class BottomStickyActionBar extends StatelessWidget {
 }
 
 class BottomStickyActionItem extends StatelessWidget {
-  const BottomStickyActionItem({Key key, @required this.label, this.callback})
+  const BottomStickyActionItem({Key key, @required this.child, this.callback})
       : super(key: key);
-  final String label;
+  final Widget child;
   final VoidCallback callback;
 
   @override
@@ -432,11 +526,16 @@ class BottomStickyActionItem extends StatelessWidget {
       onTap: callback,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-        child: Text(
-          label,
-          style: TextStyle(fontSize: 16.0),
-        ),
+        child: child,
       ),
     );
+  }
+}
+
+class NoGlowScrollBehavior extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
   }
 }

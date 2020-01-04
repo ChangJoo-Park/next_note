@@ -9,6 +9,8 @@ class _HomeMobile extends StatefulWidget {
 }
 
 class __HomeMobileState extends State<_HomeMobile> {
+  Logger _log = getLogger('_HomeMobileState');
+
   final _formKey = GlobalKey<FormState>();
 
   final FocusNode titleFocusNode =
@@ -18,38 +20,38 @@ class __HomeMobileState extends State<_HomeMobile> {
       FocusNode(debugLabel: 'NOTE_FOCUS_NODE', canRequestFocus: true);
   final TextEditingController noteController = TextEditingController();
   bool _keyboardVisible = false;
+  List<Item> _items;
   Timer _debounce;
   int _listener;
-  ItemProvider _itemProvider = ItemProvider();
-  Item _currentItem;
 
   @protected
   void initState() {
-    _itemProvider.open().then((_) async {
-      print('open database');
-      List<Item> items = await _itemProvider.getItems();
-      if (items.isEmpty) {
-        await _createNewNote();
-      } else {
-        setState(() {
-          _currentItem = items.first;
-        });
-        _setCurrentItemToController();
-      }
-    });
     super.initState();
-
     _listener = KeyboardVisibilityNotification().addNewListener(
       onChange: _onKeyboardVisibility,
     );
-    titleFocusNode.addListener(() {
-      print('focus changed');
+
+    widget.viewModel.addListener(() {
+      if (_items == null && widget.viewModel.items != null) {
+        setState(() {
+          _items = widget.viewModel.items;
+          _log.d('items updated');
+          _log.d('items.length ${_items.length}');
+        });
+      }
+      if (widget.viewModel.itemStatus == null &&
+          widget.viewModel.currentItem != null) {
+        titleController.text = widget.viewModel.currentItem.title;
+        noteController.text = widget.viewModel.currentItem.note;
+        widget.viewModel.itemStatus = 'mounted';
+        _log.d('Item mounted');
+      }
     });
   }
 
   @override
   void dispose() {
-    _itemProvider.close().then((_) {});
+    widget.viewModel.itemProvider.close();
     if (_debounce != null) {
       _debounce.cancel();
       _debounce = null;
@@ -69,14 +71,12 @@ class __HomeMobileState extends State<_HomeMobile> {
 
   void _onNoteChanged() {
     if (_debounce?.isActive ?? false) _debounce.cancel();
-    _debounce = Timer(const Duration(milliseconds: 300), () {
-      print(titleController.text);
-      print(noteController.text);
-      setState(() {
-        _currentItem.title = titleController.text;
-        _currentItem.note = noteController.text;
-      });
-      _itemProvider.update(_currentItem);
+    _debounce = Timer(const Duration(milliseconds: 300), () async {
+      widget.viewModel.currentItem.title = titleController.text;
+      widget.viewModel.currentItem.note = noteController.text;
+      await widget.viewModel.updateItem(widget.viewModel.currentItem);
+      widget.viewModel.itemStatus = 'updated';
+      _log.d('Item updated');
     });
   }
 
@@ -127,8 +127,8 @@ class __HomeMobileState extends State<_HomeMobile> {
           IconButton(
             icon: Icon(Icons.data_usage),
             onPressed: () async {
-              List list = await _itemProvider.getItems();
-              print(list);
+              // List list = await _itemProvider.getItems();
+              // print(list);
             },
           ),
           IconButton(
@@ -152,35 +152,36 @@ class __HomeMobileState extends State<_HomeMobile> {
                   right: 8.0,
                   top: 0,
                 ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      // Title
-                      TitleTextField(
-                        titleFocusNode: titleFocusNode,
-                        noteFocusNode: noteFocusNode,
-                        controller: titleController,
-                        valueChanged: (String value) {
-                          if (value.isEmpty) {
-                            titleController.text = _nowString();
-                          }
-                          _onNoteChanged();
-                        },
+                child: widget.viewModel.currentItem == null
+                    ? Center(child: CircularProgressIndicator())
+                    : Form(
+                        key: _formKey,
+                        child: Column(
+                          children: <Widget>[
+                            // Title
+                            TitleTextField(
+                              titleFocusNode: titleFocusNode,
+                              noteFocusNode: noteFocusNode,
+                              controller: titleController,
+                              valueChanged: (String value) {
+                                _onNoteChanged();
+                              },
+                            ),
+                            // Note
+                            NoteTextField(
+                              noteFocusNode: noteFocusNode,
+                              controller: noteController,
+                              valueChanged: (String value) {
+                                _onNoteChanged();
+                              },
+                            ),
+                          ],
+                        ),
                       ),
-                      // Note
-                      NoteTextField(
-                        noteFocusNode: noteFocusNode,
-                        controller: noteController,
-                        valueChanged: (String value) {
-                          _onNoteChanged();
-                        },
-                      ),
-                    ],
-                  ),
-                ),
               ),
-              _keyboardVisible ? Container() : NoteList(),
+              _keyboardVisible || widget.viewModel.items == null
+                  ? Container()
+                  : NoteList(items: _items),
             ],
           ),
         ),
@@ -188,31 +189,17 @@ class __HomeMobileState extends State<_HomeMobile> {
     );
   }
 
-  Future<Item> _createNewNote() async {
+  void _createNewNote() async {
     titleController.text = '';
     noteController.text = '';
-    Item newItem = Item();
-    newItem.title = _nowString();
-    newItem.note = '';
-    Item item = await _itemProvider.create(newItem);
-    setState(() {
-      _currentItem = item;
-    });
+    await widget.viewModel.createNewItem();
     _setCurrentItemToController();
     noteFocusNode.requestFocus();
-    return item;
-  }
-
-  String _nowString() {
-    DateTime now = DateTime.now();
-    List<String> format = [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn, ' ', am];
-    String nowString = formatDate(now, format);
-    return nowString;
   }
 
   void _setCurrentItemToController() {
-    titleController.text = _currentItem.title;
-    noteController.text = _currentItem.note;
+    titleController.text = widget.viewModel.currentItem.title;
+    noteController.text = widget.viewModel.currentItem.note;
   }
 }
 
@@ -309,9 +296,8 @@ class NoteTextField extends StatelessWidget {
 }
 
 class NoteList extends StatelessWidget {
-  const NoteList({
-    Key key,
-  }) : super(key: key);
+  final List<Item> items;
+  const NoteList({Key key, this.items}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -328,15 +314,16 @@ class NoteList extends StatelessWidget {
           return Container(
             child: ListView.builder(
               controller: scrollController,
-              itemCount: 25,
+              itemCount: items.length,
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
-                    title: Text(
-                  'Item $index',
-                  style: TextStyle(
-                    color: Colors.white,
+                  title: Text(
+                    items[index].title,
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
-                ));
+                );
               },
             ),
             decoration: BoxDecoration(

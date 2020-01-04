@@ -20,17 +20,8 @@ class _HomeTablet extends StatelessWidget {
               'You have pushed the button this many times: ',
               style: TextStyle(fontSize: 14),
             ),
-            Text(
-              '${viewModel.counter}',
-              style: Theme.of(context).textTheme.display1,
-            ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: viewModel.increment,
-        backgroundColor: Colors.indigo,
       ),
     );
   }

@@ -2,11 +2,12 @@ library home_view;
 
 import 'dart:async';
 
-import 'package:date_format/date_format.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'package:logger/logger.dart';
+import 'package:next_page/core/logger.dart';
 import 'package:next_page/models/item.dart';
 import 'package:provider_architecture/provider_architecture.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -23,8 +24,15 @@ class HomeView extends StatelessWidget {
     HomeViewModel viewModel = HomeViewModel();
     return ViewModelProvider<HomeViewModel>.withConsumer(
         viewModel: viewModel,
-        onModelReady: (viewModel) {
-          // Do something once your viewModel is initialized
+        onModelReady: (viewModel) async {
+          await viewModel.itemProvider.open();
+          await viewModel.loadItems();
+
+          if (viewModel.items.isEmpty) {
+            await viewModel.createNewItem();
+          } else {
+            viewModel.currentItem = viewModel.firstItem;
+          }
         },
         builder: (context, viewModel, child) {
           return ScreenTypeLayout(

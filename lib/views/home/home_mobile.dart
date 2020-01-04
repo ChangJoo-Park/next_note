@@ -92,18 +92,22 @@ class __HomeMobileState extends State<_HomeMobile> {
                     title: Text('NextNote'),
                     children: <Widget>[
                       SimpleDialogOption(
-                        child: ListTile(
-                          leading: Icon(FontAwesomeIcons.info),
-                          title: Text('About'),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(FontAwesomeIcons.infoCircle),
+                            SizedBox(width: 8.0),
+                            Text('About')
+                          ],
                         ),
-                        onPressed: () {},
                       ),
                       SimpleDialogOption(
-                        child: ListTile(
-                          leading: Icon(FontAwesomeIcons.trashAlt),
-                          title: Text('Trash'),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(FontAwesomeIcons.trashAlt),
+                            SizedBox(width: 8.0),
+                            Text('Delete')
+                          ],
                         ),
-                        onPressed: () {},
                       ),
                     ],
                   );

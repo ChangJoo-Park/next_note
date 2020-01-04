@@ -123,12 +123,6 @@ class __HomeMobileState extends State<_HomeMobile> {
         backgroundColor: Colors.black,
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.data_usage),
-            onPressed: () async {
-              await widget.viewModel.loadItems();
-            },
-          ),
-          IconButton(
             icon: Icon(Icons.add),
             onPressed: _createNewNote,
           ),
@@ -210,6 +204,26 @@ class __HomeMobileState extends State<_HomeMobile> {
                                       widget.viewModel.currentItem =
                                           _items[index];
                                       _setCurrentItemToController();
+                                    },
+                                    onLongPress: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext ctx) {
+                                            return SimpleDialog(
+                                              children: <Widget>[
+                                                SimpleDialogOption(
+                                                  child: Row(
+                                                    children: <Widget>[
+                                                      Icon(FontAwesomeIcons
+                                                          .trashAlt),
+                                                      SizedBox(width: 8.0),
+                                                      Text('Delete')
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          });
                                     },
                                     title: Text(
                                       _items[index].title,

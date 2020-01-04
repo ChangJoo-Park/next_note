@@ -32,11 +32,9 @@ class __HomeMobileState extends State<_HomeMobile> {
     );
 
     widget.viewModel.addListener(() {
-      if (_items == null && widget.viewModel.items != null) {
+      if (widget.viewModel.items != null) {
         setState(() {
           _items = widget.viewModel.items;
-          _log.d('items updated');
-          _log.d('items.length ${_items.length}');
         });
       }
       if (widget.viewModel.itemStatus == null &&
@@ -127,8 +125,7 @@ class __HomeMobileState extends State<_HomeMobile> {
           IconButton(
             icon: Icon(Icons.data_usage),
             onPressed: () async {
-              // List list = await _itemProvider.getItems();
-              // print(list);
+              await widget.viewModel.loadItems();
             },
           ),
           IconButton(
@@ -181,7 +178,59 @@ class __HomeMobileState extends State<_HomeMobile> {
               ),
               _keyboardVisible || widget.viewModel.items == null
                   ? Container()
-                  : NoteList(items: _items),
+                  : Padding(
+                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                      child: DraggableScrollableSheet(
+                        maxChildSize: 0.9,
+                        initialChildSize: 0.08,
+                        minChildSize: 0.08,
+                        builder: (context, scrollController) {
+                          scrollController.addListener(() {
+                            // TODO: 스크롤 포지션에 따라 opacity를 변경해야함
+                          });
+                          return Container(
+                            child: ListView.builder(
+                              controller: scrollController,
+                              itemCount: _items.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return ListTile(
+                                  onTap: () {
+                                    widget.viewModel.currentItem =
+                                        _items[index];
+                                    _setCurrentItemToController();
+                                  },
+                                  title: Text(
+                                    _items[index].title,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.rectangle,
+                              color: Colors.black,
+
+                              /// To set a shadow behind the parent container
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.white,
+                                  offset: Offset(0.0, -2.0),
+                                  blurRadius: 4.0,
+                                ),
+                              ],
+
+                              /// To set radius of top left and top right
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(8.0),
+                                topRight: Radius.circular(8.0),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
             ],
           ),
         ),

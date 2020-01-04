@@ -184,7 +184,25 @@ class __HomeMobileState extends State<_HomeMobile> {
                       ),
               ),
               _keyboardVisible || widget.viewModel.items == null
-                  ? Container()
+                  ? BottomStickyActionBar(
+                      children: <Widget>[
+                        BottomStickyActionItem(label: 'B', callback: () {}),
+                        BottomStickyActionItem(label: 'H', callback: () {}),
+                        BottomStickyActionItem(label: 'L', callback: () {}),
+                        BottomStickyActionItem(
+                          label: 'C',
+                          callback: () {
+                            noteController.text += '\n - [ ] ';
+                            noteController.selection =
+                                TextSelection.fromPosition(
+                              TextPosition(
+                                offset: noteController.text.length,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    )
                   : Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: DraggableScrollableSheet(
@@ -215,6 +233,9 @@ class __HomeMobileState extends State<_HomeMobile> {
                                           builder: (BuildContext ctx) {
                                             return SimpleDialog(
                                               children: <Widget>[
+                                                Container(
+                                                  child: Text(''),
+                                                ),
                                                 SimpleDialogOption(
                                                   child: Row(
                                                     children: <Widget>[
@@ -369,6 +390,52 @@ class NoteTextField extends StatelessWidget {
         maxLines: 99999,
         autofocus: false,
         onChanged: valueChanged,
+      ),
+    );
+  }
+}
+
+class BottomStickyActionBar extends StatelessWidget {
+  const BottomStickyActionBar({
+    Key key,
+    this.children,
+  }) : super(key: key);
+
+  final children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      left: 0.0,
+      bottom: 1.0,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        decoration: BoxDecoration(
+          border: Border.all(width: 1.0),
+        ),
+        width: MediaQuery.of(context).size.width,
+        child: Row(children: children),
+      ),
+    );
+  }
+}
+
+class BottomStickyActionItem extends StatelessWidget {
+  const BottomStickyActionItem({Key key, @required this.label, this.callback})
+      : super(key: key);
+  final String label;
+  final VoidCallback callback;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: callback,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+        child: Text(
+          label,
+          style: TextStyle(fontSize: 16.0),
+        ),
       ),
     );
   }

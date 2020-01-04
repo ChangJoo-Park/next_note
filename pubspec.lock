@@ -135,8 +135,8 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "981f6794718654cb30b36e403505fe1ff502205b"
-      url: "git@github.com:ChangJoo-Park/flutter_keyboard_visibility.git"
+      resolved-ref: "5368ee3dea27e5ec8b69f7b5a2c84f2ac716ac79"
+      url: "git@github.com:rafalbednarczuk/flutter_keyboard_visibility.git"
     source: git
     version: "0.5.6"
   logger:

@@ -216,8 +216,8 @@ class __HomeMobileState extends State<_HomeMobile> {
                             size: 16,
                           ),
                           callback: () => addCharacterAndMoveCaret(
-                            character: '****',
-                            offset: -2,
+                            character: '*',
+                            offset: -1,
                           ),
                         ),
                         BottomStickyActionItem(
@@ -226,7 +226,7 @@ class __HomeMobileState extends State<_HomeMobile> {
                             size: 16,
                           ),
                           callback: () => addCharacterAndMoveCaret(
-                            character: '****',
+                            character: '____',
                             offset: -2,
                           ),
                         ),
@@ -236,8 +236,8 @@ class __HomeMobileState extends State<_HomeMobile> {
                             size: 16,
                           ),
                           callback: () => addCharacterAndMoveCaret(
-                            character: '****',
-                            offset: -2,
+                            character: '~~',
+                            offset: -1,
                           ),
                         ),
                         BottomStickyActionItem(
@@ -246,8 +246,7 @@ class __HomeMobileState extends State<_HomeMobile> {
                             size: 16,
                           ),
                           callback: () => addCharacterAndMoveCaret(
-                            character: '****',
-                            offset: -2,
+                            character: '> ',
                           ),
                         ),
                         BottomStickyActionItem(
@@ -504,9 +503,8 @@ class BottomStickyActionBar extends StatelessWidget {
       bottom: 1.0,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-        decoration: BoxDecoration(
-          border: Border.all(width: 1.0),
-        ),
+        decoration:
+            BoxDecoration(border: Border.all(width: 1.0), color: Colors.white),
         width: MediaQuery.of(context).size.width,
         child: Row(children: children),
       ),

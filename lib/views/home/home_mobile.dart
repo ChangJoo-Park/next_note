@@ -179,31 +179,34 @@ class __HomeMobileState extends State<_HomeMobile> {
               _keyboardVisible || widget.viewModel.items == null
                   ? Container()
                   : Padding(
-                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: DraggableScrollableSheet(
+                        expand: true,
                         maxChildSize: 0.9,
                         initialChildSize: 0.08,
                         minChildSize: 0.08,
                         builder: (context, scrollController) {
-                          scrollController.addListener(() {
-                            // TODO: 스크롤 포지션에 따라 opacity를 변경해야함
-                          });
                           return Container(
                             child: ListView.builder(
                               controller: scrollController,
                               itemCount: _items.length,
                               itemBuilder: (BuildContext context, int index) {
-                                return ListTile(
-                                  onTap: () {
-                                    widget.viewModel.currentItem =
-                                        _items[index];
-                                    _setCurrentItemToController();
-                                  },
-                                  title: Text(
-                                    _items[index].title,
-                                    style: TextStyle(
-                                      color: Colors.white,
+                                bool selected =
+                                    widget.viewModel.currentItem.id ==
+                                        _items[index].id;
+                                return Container(
+                                  color: Colors.black,
+                                  child: ListTile(
+                                    onTap: () {
+                                      widget.viewModel.currentItem =
+                                          _items[index];
+                                      _setCurrentItemToController();
+                                    },
+                                    title: Text(
+                                      _items[index].title,
+                                      style: TextStyle(color: Colors.white),
                                     ),
+                                    selected: selected,
                                   ),
                                 );
                               },
@@ -337,65 +340,8 @@ class NoteTextField extends StatelessWidget {
         scrollPadding: EdgeInsets.all(20.0),
         keyboardType: TextInputType.multiline,
         maxLines: 99999,
-        autofocus: true,
+        autofocus: false,
         onChanged: valueChanged,
-      ),
-    );
-  }
-}
-
-class NoteList extends StatelessWidget {
-  final List<Item> items;
-  const NoteList({Key key, this.items}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-      child: DraggableScrollableSheet(
-        maxChildSize: 0.9,
-        initialChildSize: 0.08,
-        minChildSize: 0.08,
-        builder: (context, scrollController) {
-          scrollController.addListener(() {
-            // TODO: 스크롤 포지션에 따라 opacity를 변경해야함
-          });
-          return Container(
-            child: ListView.builder(
-              controller: scrollController,
-              itemCount: items.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text(
-                    items[index].title,
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                );
-              },
-            ),
-            decoration: BoxDecoration(
-              shape: BoxShape.rectangle,
-              color: Colors.black,
-
-              /// To set a shadow behind the parent container
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.white,
-                  offset: Offset(0.0, -2.0),
-                  blurRadius: 4.0,
-                ),
-              ],
-
-              /// To set radius of top left and top right
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8.0),
-                topRight: Radius.circular(8.0),
-              ),
-            ),
-          );
-        },
       ),
     );
   }

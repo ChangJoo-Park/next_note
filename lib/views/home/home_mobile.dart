@@ -264,7 +264,7 @@ class __HomeMobileState extends State<_HomeMobile> {
                             size: 16,
                           ),
                           callback: () =>
-                              addCharacterAndMoveCaret(character: '\n- '),
+                              addCharacterAndMoveCaret(character: '- '),
                         ),
                         BottomStickyActionItem(
                           child: Icon(
@@ -272,7 +272,7 @@ class __HomeMobileState extends State<_HomeMobile> {
                             size: 16,
                           ),
                           callback: () =>
-                              addCharacterAndMoveCaret(character: '\n1. '),
+                              addCharacterAndMoveCaret(character: '1. '),
                         ),
                         BottomStickyActionItem(
                           child: Icon(
@@ -280,7 +280,7 @@ class __HomeMobileState extends State<_HomeMobile> {
                             size: 16,
                           ),
                           callback: () =>
-                              addCharacterAndMoveCaret(character: '\n- [ ] '),
+                              addCharacterAndMoveCaret(character: '- [ ] '),
                         ),
                       ],
                     )

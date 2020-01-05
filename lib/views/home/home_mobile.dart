@@ -150,6 +150,17 @@ class __HomeMobileState extends State<_HomeMobile> {
                 child: widget.viewModel.currentItem == null
                     ? Center(child: CircularProgressIndicator())
                     : PageView(
+                        onPageChanged: (int page) {
+                          if (page == 1) {
+                            if (titleFocusNode.hasFocus) {
+                              titleFocusNode.unfocus();
+                            }
+
+                            if (noteFocusNode.hasFocus) {
+                              noteFocusNode.unfocus();
+                            }
+                          }
+                        },
                         children: <Widget>[
                           Container(
                             padding: EdgeInsets.only(

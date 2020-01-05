@@ -207,7 +207,7 @@ class __HomeMobileState extends State<_HomeMobile> {
                           ),
                           callback: () => addCharacterAndMoveCaret(
                             character: '****',
-                            offset: -2,
+                            offset: 2,
                           ),
                         ),
                         BottomStickyActionItem(
@@ -216,18 +216,8 @@ class __HomeMobileState extends State<_HomeMobile> {
                             size: 16,
                           ),
                           callback: () => addCharacterAndMoveCaret(
-                            character: '*',
-                            offset: -1,
-                          ),
-                        ),
-                        BottomStickyActionItem(
-                          child: Icon(
-                            FontAwesomeIcons.underline,
-                            size: 16,
-                          ),
-                          callback: () => addCharacterAndMoveCaret(
-                            character: '____',
-                            offset: -2,
+                            character: '**',
+                            offset: 1,
                           ),
                         ),
                         BottomStickyActionItem(
@@ -237,7 +227,7 @@ class __HomeMobileState extends State<_HomeMobile> {
                           ),
                           callback: () => addCharacterAndMoveCaret(
                             character: '~~',
-                            offset: -1,
+                            offset: 1,
                           ),
                         ),
                         BottomStickyActionItem(
@@ -382,12 +372,26 @@ class __HomeMobileState extends State<_HomeMobile> {
     noteController.text = widget.viewModel.currentItem.note;
   }
 
-  // TODO: Add caret control
   void addCharacterAndMoveCaret({String character, int offset = 0}) {
-    noteController.text += character;
-    noteController.selection = TextSelection.fromPosition(
-      TextPosition(
-        offset: noteController.text.length + offset,
+    int curSelectionStart = noteController.selection.start;
+    String leftText =
+        noteController.text.substring(0, noteController.selection.start);
+    String selectionWord = noteController.text.substring(
+        noteController.selection.start, noteController.selection.end);
+    String rightText = noteController.text
+        .substring(noteController.selection.end, noteController.text.length);
+    String midText = '';
+
+    if (offset > 0) {
+      midText = character.substring(0, offset) +
+          selectionWord +
+          character.substring(offset, character.length);
+    }
+
+    noteController.value = TextEditingValue(
+      text: leftText + midText + rightText,
+      selection: TextSelection.fromPosition(
+        TextPosition(offset: curSelectionStart + selectionWord.length + offset),
       ),
     );
   }

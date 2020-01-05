@@ -9,6 +9,8 @@ class _HomeMobile extends StatefulWidget {
 }
 
 class __HomeMobileState extends State<_HomeMobile> {
+  Logger _log = getLogger('_HomeMobileState');
+
   final _formKey = GlobalKey<FormState>();
 
   final FocusNode titleFocusNode =
@@ -18,38 +20,36 @@ class __HomeMobileState extends State<_HomeMobile> {
       FocusNode(debugLabel: 'NOTE_FOCUS_NODE', canRequestFocus: true);
   final TextEditingController noteController = TextEditingController();
   bool _keyboardVisible = false;
+  List<Item> _items;
   Timer _debounce;
   int _listener;
-  ItemProvider _itemProvider = ItemProvider();
-  Item _currentItem;
 
   @protected
   void initState() {
-    _itemProvider.open().then((_) async {
-      print('open database');
-      List<Item> items = await _itemProvider.getItems();
-      if (items.isEmpty) {
-        await _createNewNote();
-      } else {
-        setState(() {
-          _currentItem = items.first;
-        });
-        _setCurrentItemToController();
-      }
-    });
     super.initState();
-
     _listener = KeyboardVisibilityNotification().addNewListener(
       onChange: _onKeyboardVisibility,
     );
-    titleFocusNode.addListener(() {
-      print('focus changed');
+
+    widget.viewModel.addListener(() {
+      if (widget.viewModel.items != null) {
+        setState(() {
+          _items = widget.viewModel.items;
+        });
+      }
+      if (widget.viewModel.itemStatus == null &&
+          widget.viewModel.currentItem != null) {
+        titleController.text = widget.viewModel.currentItem.title;
+        noteController.text = widget.viewModel.currentItem.note;
+        widget.viewModel.itemStatus = 'mounted';
+        _log.d('Item mounted');
+      }
     });
   }
 
   @override
   void dispose() {
-    _itemProvider.close().then((_) {});
+    widget.viewModel.itemProvider.close();
     if (_debounce != null) {
       _debounce.cancel();
       _debounce = null;
@@ -69,14 +69,12 @@ class __HomeMobileState extends State<_HomeMobile> {
 
   void _onNoteChanged() {
     if (_debounce?.isActive ?? false) _debounce.cancel();
-    _debounce = Timer(const Duration(milliseconds: 300), () {
-      print(titleController.text);
-      print(noteController.text);
-      setState(() {
-        _currentItem.title = titleController.text;
-        _currentItem.note = noteController.text;
-      });
-      _itemProvider.update(_currentItem);
+    _debounce = Timer(const Duration(milliseconds: 300), () async {
+      widget.viewModel.currentItem.title = titleController.text;
+      widget.viewModel.currentItem.note = noteController.text;
+      await widget.viewModel.updateItem(widget.viewModel.currentItem);
+      widget.viewModel.itemStatus = 'updated';
+      _log.d('Item updated');
     });
   }
 
@@ -94,18 +92,22 @@ class __HomeMobileState extends State<_HomeMobile> {
                     title: Text('NextNote'),
                     children: <Widget>[
                       SimpleDialogOption(
-                        child: ListTile(
-                          leading: Icon(FontAwesomeIcons.info),
-                          title: Text('About'),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(FontAwesomeIcons.infoCircle),
+                            SizedBox(width: 8.0),
+                            Text('About')
+                          ],
                         ),
-                        onPressed: () {},
                       ),
                       SimpleDialogOption(
-                        child: ListTile(
-                          leading: Icon(FontAwesomeIcons.trashAlt),
-                          title: Text('Trash'),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(FontAwesomeIcons.trashAlt),
+                            SizedBox(width: 8.0),
+                            Text('Delete')
+                          ],
                         ),
-                        onPressed: () {},
                       ),
                     ],
                   );
@@ -118,21 +120,20 @@ class __HomeMobileState extends State<_HomeMobile> {
             children: <Widget>[
               Text('NextNote'),
               SizedBox(width: 4.0),
-              Icon(Icons.keyboard_arrow_down),
+              Icon(
+                FontAwesomeIcons.chevronDown,
+                size: 16,
+              ),
             ],
           ),
         ),
         backgroundColor: Colors.black,
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.data_usage),
-            onPressed: () async {
-              List list = await _itemProvider.getItems();
-              print(list);
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.add),
+            icon: Icon(
+              FontAwesomeIcons.plus,
+              size: 16,
+            ),
             onPressed: _createNewNote,
           ),
         ],
@@ -146,41 +147,222 @@ class __HomeMobileState extends State<_HomeMobile> {
             fit: StackFit.expand,
             children: <Widget>[
               Container(
-                padding: EdgeInsets.only(
-                  bottom: 0.0,
-                  left: 8.0,
-                  right: 8.0,
-                  top: 0,
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      // Title
-                      TitleTextField(
-                        titleFocusNode: titleFocusNode,
-                        noteFocusNode: noteFocusNode,
-                        controller: titleController,
-                        valueChanged: (String value) {
-                          if (value.isEmpty) {
-                            titleController.text = _nowString();
+                child: widget.viewModel.currentItem == null
+                    ? Center(child: CircularProgressIndicator())
+                    : PageView(
+                        onPageChanged: (int page) {
+                          if (page == 1) {
+                            if (titleFocusNode.hasFocus) {
+                              titleFocusNode.unfocus();
+                            }
+
+                            if (noteFocusNode.hasFocus) {
+                              noteFocusNode.unfocus();
+                            }
                           }
-                          _onNoteChanged();
                         },
+                        children: <Widget>[
+                          Container(
+                            padding: EdgeInsets.only(
+                              left: 8.0,
+                              right: 8.0,
+                              bottom: 34.0,
+                            ),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                children: <Widget>[
+                                  // Title
+                                  TitleTextField(
+                                    titleFocusNode: titleFocusNode,
+                                    noteFocusNode: noteFocusNode,
+                                    controller: titleController,
+                                    valueChanged: (String value) {
+                                      _onNoteChanged();
+                                    },
+                                  ),
+                                  // Note
+                                  ScrollConfiguration(
+                                    behavior: NoGlowScrollBehavior(),
+                                    child: NoteTextField(
+                                      noteFocusNode: noteFocusNode,
+                                      controller: noteController,
+                                      valueChanged: (String value) {
+                                        // TODO: handle by last
+                                        _onNoteChanged();
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            child: Markdown(
+                                styleSheetTheme:
+                                    MarkdownStyleSheetBaseTheme.platform,
+                                shrinkWrap: true,
+                                data:
+                                    '# ${titleController.text}\n${noteController.text}'),
+                          ),
+                        ],
                       ),
-                      // Note
-                      NoteTextField(
-                        noteFocusNode: noteFocusNode,
-                        controller: noteController,
-                        valueChanged: (String value) {
-                          _onNoteChanged();
-                        },
-                      ),
-                    ],
-                  ),
-                ),
               ),
-              _keyboardVisible ? Container() : NoteList(),
+              _keyboardVisible || widget.viewModel.items == null
+                  ? BottomStickyActionBar(
+                      children: <Widget>[
+                        BottomStickyActionItem(
+                          child: Icon(
+                            FontAwesomeIcons.bold,
+                            size: 16,
+                          ),
+                          callback: () => addCharacterAndMoveCaret(
+                            character: '****',
+                            offset: 2,
+                          ),
+                        ),
+                        BottomStickyActionItem(
+                          child: Icon(
+                            FontAwesomeIcons.italic,
+                            size: 16,
+                          ),
+                          callback: () => addCharacterAndMoveCaret(
+                            character: '**',
+                            offset: 1,
+                          ),
+                        ),
+                        BottomStickyActionItem(
+                          child: Icon(
+                            FontAwesomeIcons.strikethrough,
+                            size: 16,
+                          ),
+                          callback: () => addCharacterAndMoveCaret(
+                            character: '~~',
+                            offset: 1,
+                          ),
+                        ),
+                        BottomStickyActionItem(
+                          child: Icon(
+                            FontAwesomeIcons.quoteLeft,
+                            size: 16,
+                          ),
+                          callback: () => addCharacterAndMoveCaret(
+                            character: '> ',
+                          ),
+                        ),
+                        BottomStickyActionItem(
+                          child: Icon(
+                            FontAwesomeIcons.hashtag,
+                            size: 16,
+                          ),
+                          callback: () =>
+                              addCharacterAndMoveCaret(character: '#'),
+                        ),
+                        BottomStickyActionItem(
+                          child: Icon(
+                            FontAwesomeIcons.listUl,
+                            size: 16,
+                          ),
+                          callback: () =>
+                              addCharacterAndMoveCaret(character: '\n- '),
+                        ),
+                        BottomStickyActionItem(
+                          child: Icon(
+                            FontAwesomeIcons.listOl,
+                            size: 16,
+                          ),
+                          callback: () =>
+                              addCharacterAndMoveCaret(character: '\n1. '),
+                        ),
+                        BottomStickyActionItem(
+                          child: Icon(
+                            FontAwesomeIcons.checkSquare,
+                            size: 16,
+                          ),
+                          callback: () =>
+                              addCharacterAndMoveCaret(character: '\n- [ ] '),
+                        ),
+                      ],
+                    )
+                  : Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: DraggableScrollableSheet(
+                        expand: true,
+                        maxChildSize: 0.9,
+                        initialChildSize: 0.08,
+                        minChildSize: 0.08,
+                        builder: (context, scrollController) {
+                          return Container(
+                            child: ListView.builder(
+                              controller: scrollController,
+                              itemCount: _items.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                bool selected =
+                                    widget.viewModel.currentItem.id ==
+                                        _items[index].id;
+                                return Container(
+                                  color: Colors.black,
+                                  child: ListTile(
+                                    onTap: () {
+                                      widget.viewModel.currentItem =
+                                          _items[index];
+                                      _setCurrentItemToController();
+                                    },
+                                    onLongPress: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext ctx) {
+                                            return SimpleDialog(
+                                              children: <Widget>[
+                                                Container(
+                                                  child: Text(''),
+                                                ),
+                                                SimpleDialogOption(
+                                                  child: Row(
+                                                    children: <Widget>[
+                                                      Icon(FontAwesomeIcons
+                                                          .trashAlt),
+                                                      SizedBox(width: 8.0),
+                                                      Text('Delete')
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          });
+                                    },
+                                    title: Text(
+                                      _items[index].title,
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    selected: selected,
+                                  ),
+                                );
+                              },
+                            ),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.rectangle,
+                              color: Colors.black,
+
+                              /// To set a shadow behind the parent container
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.white,
+                                  offset: Offset(0.0, -2.0),
+                                  blurRadius: 4.0,
+                                ),
+                              ],
+
+                              /// To set radius of top left and top right
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(8.0),
+                                topRight: Radius.circular(8.0),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
             ],
           ),
         ),
@@ -188,31 +370,49 @@ class __HomeMobileState extends State<_HomeMobile> {
     );
   }
 
-  Future<Item> _createNewNote() async {
+  void _createNewNote() async {
     titleController.text = '';
     noteController.text = '';
-    Item newItem = Item();
-    newItem.title = _nowString();
-    newItem.note = '';
-    Item item = await _itemProvider.create(newItem);
-    setState(() {
-      _currentItem = item;
-    });
+    await widget.viewModel.createNewItem();
     _setCurrentItemToController();
     noteFocusNode.requestFocus();
-    return item;
-  }
-
-  String _nowString() {
-    DateTime now = DateTime.now();
-    List<String> format = [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn, ' ', am];
-    String nowString = formatDate(now, format);
-    return nowString;
   }
 
   void _setCurrentItemToController() {
-    titleController.text = _currentItem.title;
-    noteController.text = _currentItem.note;
+    titleController.text = widget.viewModel.currentItem.title;
+    noteController.text = widget.viewModel.currentItem.note;
+  }
+
+  void addCharacterAndMoveCaret({String character, int offset = 0}) {
+    int curSelectionStart = noteController.selection.start;
+    int curSelectionEnd = noteController.selection.end;
+    int curTextLength = noteController.text.length;
+    String midText = '';
+    int position = 0;
+
+    String leftText = noteController.text.substring(0, curSelectionStart);
+    String selectionWord =
+        noteController.text.substring(curSelectionStart, curSelectionEnd);
+    String rightText =
+        noteController.text.substring(curSelectionEnd, curTextLength);
+
+    if (offset > 0) {
+      midText = character.substring(0, offset) +
+          selectionWord +
+          character.substring(offset, character.length);
+      position = curSelectionStart + selectionWord.length + offset;
+    } else {
+      midText = character;
+      position = curSelectionStart + midText.length;
+    }
+    String text = leftText + midText + rightText;
+    TextSelection selection = TextSelection.fromPosition(
+      TextPosition(offset: position),
+    );
+    noteController.value = TextEditingValue(
+      text: text,
+      selection: selection,
+    );
   }
 }
 
@@ -301,66 +501,62 @@ class NoteTextField extends StatelessWidget {
         scrollPadding: EdgeInsets.all(20.0),
         keyboardType: TextInputType.multiline,
         maxLines: 99999,
-        autofocus: true,
+        autofocus: false,
         onChanged: valueChanged,
+        onEditingComplete: () {
+          debugPrint('onEditingCompleted');
+        },
       ),
     );
   }
 }
 
-class NoteList extends StatelessWidget {
-  const NoteList({
+class BottomStickyActionBar extends StatelessWidget {
+  const BottomStickyActionBar({
     Key key,
+    this.children,
   }) : super(key: key);
+
+  final children;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-      child: DraggableScrollableSheet(
-        maxChildSize: 0.9,
-        initialChildSize: 0.08,
-        minChildSize: 0.08,
-        builder: (context, scrollController) {
-          scrollController.addListener(() {
-            // TODO: 스크롤 포지션에 따라 opacity를 변경해야함
-          });
-          return Container(
-            child: ListView.builder(
-              controller: scrollController,
-              itemCount: 25,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                    title: Text(
-                  'Item $index',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ));
-              },
-            ),
-            decoration: BoxDecoration(
-              shape: BoxShape.rectangle,
-              color: Colors.black,
-
-              /// To set a shadow behind the parent container
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.white,
-                  offset: Offset(0.0, -2.0),
-                  blurRadius: 4.0,
-                ),
-              ],
-
-              /// To set radius of top left and top right
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8.0),
-                topRight: Radius.circular(8.0),
-              ),
-            ),
-          );
-        },
+    return Positioned(
+      left: 0.0,
+      bottom: 1.0,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        decoration:
+            BoxDecoration(border: Border.all(width: 1.0), color: Colors.white),
+        width: MediaQuery.of(context).size.width,
+        child: Row(children: children),
       ),
     );
+  }
+}
+
+class BottomStickyActionItem extends StatelessWidget {
+  const BottomStickyActionItem({Key key, @required this.child, this.callback})
+      : super(key: key);
+  final Widget child;
+  final VoidCallback callback;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: callback,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+        child: child,
+      ),
+    );
+  }
+}
+
+class NoGlowScrollBehavior extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
   }
 }

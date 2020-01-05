@@ -1,3 +1,4 @@
+import 'package:date_format/date_format.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
 
@@ -71,14 +72,15 @@ class ItemProvider {
   ''');
   }
 
-  Future<List<Item>> getItems({int limit = 1}) async {
-    List<Map> maps =
-        await db.query(tableItem, orderBy: 'updated_at DESC', limit: limit);
+  Future<List<Item>> getItems() async {
+    List<Map> maps = await db.query(tableItem, orderBy: 'updated_at DESC');
     List<Item> items = maps.map((item) => Item.fromMap(item)).toList();
     return items;
   }
 
   Future<Item> create(Item item) async {
+    item.title = _nowString();
+    item.note = '';
     item.createdAt = DateTime.now().toIso8601String();
     item.updatedAt = DateTime.now().toIso8601String();
     item.deletedAt = null;
@@ -102,4 +104,11 @@ class ItemProvider {
   }
 
   Future close() async => db.close();
+
+  String _nowString() {
+    DateTime now = DateTime.now();
+    List<String> format = [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn, ' ', am];
+    String nowString = formatDate(now, format);
+    return nowString;
+  }
 }

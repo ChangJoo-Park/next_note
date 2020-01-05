@@ -261,7 +261,7 @@ class __HomeMobileState extends State<_HomeMobile> {
                             size: 16,
                           ),
                           callback: () =>
-                              addCharacterAndMoveCaret(character: '\n- '),
+                              addCharacterAndMoveCaret(character: '\n1. '),
                         ),
                         BottomStickyActionItem(
                           child: Icon(
@@ -374,25 +374,33 @@ class __HomeMobileState extends State<_HomeMobile> {
 
   void addCharacterAndMoveCaret({String character, int offset = 0}) {
     int curSelectionStart = noteController.selection.start;
-    String leftText =
-        noteController.text.substring(0, noteController.selection.start);
-    String selectionWord = noteController.text.substring(
-        noteController.selection.start, noteController.selection.end);
-    String rightText = noteController.text
-        .substring(noteController.selection.end, noteController.text.length);
+    int curSelectionEnd = noteController.selection.end;
+    int curTextLength = noteController.text.length;
     String midText = '';
+    int position = 0;
+
+    String leftText = noteController.text.substring(0, curSelectionStart);
+    String selectionWord =
+        noteController.text.substring(curSelectionStart, curSelectionEnd);
+    String rightText =
+        noteController.text.substring(curSelectionEnd, curTextLength);
 
     if (offset > 0) {
       midText = character.substring(0, offset) +
           selectionWord +
           character.substring(offset, character.length);
+      position = curSelectionStart + selectionWord.length + offset;
+    } else {
+      midText = character;
+      position = curSelectionStart + midText.length;
     }
-
+    String text = leftText + midText + rightText;
+    TextSelection selection = TextSelection.fromPosition(
+      TextPosition(offset: position),
+    );
     noteController.value = TextEditingValue(
-      text: leftText + midText + rightText,
-      selection: TextSelection.fromPosition(
-        TextPosition(offset: curSelectionStart + selectionWord.length + offset),
-      ),
+      text: text,
+      selection: selection,
     );
   }
 }

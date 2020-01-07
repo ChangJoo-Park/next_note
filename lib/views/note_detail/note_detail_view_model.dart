@@ -17,12 +17,11 @@ class NoteDetailViewModel extends BaseViewModel {
 
   Note get currentNote => _currentNote;
 
+  // Add ViewModel specific code here
   initialize() async {
     _noteStorage = NoteStorage();
     await _noteStorage.initializationDone;
     notifyListeners();
     initialized = true;
   }
-
-  // Add ViewModel specific code here
 }

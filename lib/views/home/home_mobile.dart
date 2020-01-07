@@ -97,6 +97,8 @@ class __HomeMobileState extends State<_HomeMobile> {
                             children: <Widget>[
                               ListTile(
                                 title: Text(viewModel.items[index].fileName),
+                                subtitle: Text(
+                                    viewModel.items[index].modified.toString()),
                                 onTap: () {
                                   _openNote(viewModel.items[index]);
                                 },

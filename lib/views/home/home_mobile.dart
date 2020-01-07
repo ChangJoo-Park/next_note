@@ -25,13 +25,12 @@ class __HomeMobileState extends State<_HomeMobile> {
   Timer _debounce;
   int _listener;
   HomeViewModel viewModel;
-
   __HomeMobileState({this.viewModel});
 
   @protected
   void initState() {
     super.initState();
-    debugPrint(viewModel.items.length.toString());
+
     _listener = KeyboardVisibilityNotification().addNewListener(
       onChange: _onKeyboardVisibility,
     );
@@ -91,7 +90,22 @@ class __HomeMobileState extends State<_HomeMobile> {
               fit: StackFit.expand,
               children: <Widget>[
                 viewModel.currentNote == null
-                    ? Container()
+                    ? ListView.builder(
+                        itemCount: viewModel.items.length,
+                        itemBuilder: (BuildContext ctx, int index) {
+                          return Column(
+                            children: <Widget>[
+                              ListTile(
+                                title: Text(viewModel.items[index].fileName),
+                                onTap: () {
+                                  _openNote(viewModel.items[index]);
+                                },
+                              ),
+                              Divider(),
+                            ],
+                          );
+                        },
+                      )
                     : Container(
                         padding: EdgeInsets.all(8.0),
                         child: Column(

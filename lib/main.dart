@@ -15,9 +15,18 @@ void main() async {
 class MainApplication extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = ThemeData(
+      primaryColor: Colors.white,
+      accentColor: Colors.black,
+    );
+
+    final ThemeData darkTheme = ThemeData.dark();
+
     return MultiProvider(
       providers: ProviderInjector.providers,
       child: MaterialApp(
+        theme: theme,
+        darkTheme: darkTheme,
         debugShowCheckedModeBanner: false,
         navigatorKey: locator<NavigatorService>().navigatorKey,
         home: HomeView(),

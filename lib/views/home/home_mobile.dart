@@ -74,58 +74,56 @@ class __HomeMobileState extends State<_HomeMobile> {
     var childButtons = List<UnicornButton>();
 
     childButtons.add(UnicornButton(
-        hasLabel: true,
-        labelText: "Choo choo",
         currentButton: FloatingActionButton(
-          heroTag: "train",
-          backgroundColor: Colors.redAccent,
-          mini: true,
-          child: Icon(Icons.train),
-          onPressed: () {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('새 노트'),
-                    content: Form(
-                      key: _newNoteFormKey,
-                      child: TextFormField(
-                        initialValue: '${_nowString()}.md',
-                        validator: (String value) {
-                          if (value.isEmpty) {
-                            return 'Please enter some text';
-                          }
-                          return null;
-                        },
-                        onSaved: (String value) {
-                          setState(() {
-                            _newNoteName = value;
-                          });
-                        },
-                      ),
-                    ),
-                    actions: <Widget>[
-                      FlatButton(
-                        child: Text('취소'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      FlatButton(
-                        child: Text('만들기'),
-                        onPressed: () {
-                          if (_newNoteFormKey.currentState.validate()) {
-                            _newNoteFormKey.currentState.save();
-                            viewModel.createNewNote(_newNoteName);
-                          }
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  );
-                });
-          },
-        )));
+      heroTag: "train",
+      backgroundColor: Colors.redAccent,
+      mini: true,
+      child: Icon(Icons.train),
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('새 노트'),
+                content: Form(
+                  key: _newNoteFormKey,
+                  child: TextFormField(
+                    initialValue: '${_nowString()}.md',
+                    validator: (String value) {
+                      if (value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
+                    onSaved: (String value) {
+                      setState(() {
+                        _newNoteName = value;
+                      });
+                    },
+                  ),
+                ),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('취소'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  FlatButton(
+                    child: Text('만들기'),
+                    onPressed: () {
+                      if (_newNoteFormKey.currentState.validate()) {
+                        _newNoteFormKey.currentState.save();
+                        viewModel.createNewNote(_newNoteName);
+                      }
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
+      },
+    )));
 
     childButtons.add(UnicornButton(
         currentButton: FloatingActionButton(
@@ -144,232 +142,70 @@ class __HomeMobileState extends State<_HomeMobile> {
     return Scaffold(
       resizeToAvoidBottomPadding: true,
       appBar: _keyboardVisible ? null : buildAppBar(),
-      drawer: Drawer(
-        child: ListView(
-          padding: const EdgeInsets.all(0.0),
-          children: buildNoteList(),
-        ),
-      ),
       body: DoubleBackToCloseApp(
         snackBar: const SnackBar(
           content: Text('Tap back again to leave'),
         ),
         child: SafeArea(
-          child: Center(
-            child: Stack(
-              fit: StackFit.expand,
-              children: <Widget>[
-                viewModel.currentNote == null
-                    ? ListView.builder(
-                        itemCount: viewModel.items.length,
-                        itemBuilder: (BuildContext ctx, int index) {
-                          return Column(
-                            children: <Widget>[
-                              ListTile(
-                                title: Text(viewModel.items[index].fileName),
-                                subtitle: Text(
-                                    viewModel.items[index].modified.toString()),
-                                onTap: () {
-                                  _openNote(viewModel.items[index]);
-                                },
-                              ),
-                              Divider(),
-                            ],
-                          );
-                        },
-                      )
-                    : Container(
-                        padding: EdgeInsets.all(8.0),
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              child: Text(
-                                viewModel.currentNote.fileName,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Form(
-                                key: _formKey,
-                                child: TextField(
-                                  controller: noteController,
-                                  focusNode: noteFocusNode,
-                                  cursorColor: Colors.black,
-                                  style: TextStyle(fontFamily: 'Monospace'),
-                                  decoration: InputDecoration(
-                                    hintText: "Insert your message",
-                                    border: InputBorder.none,
-                                  ),
-                                  scrollPadding: EdgeInsets.all(20.0),
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: 99999,
-                                  autofocus: false,
-                                  onChanged: (String value) {
-                                    if (!_fileOpening) {
-                                      _onNoteChanged(value: value);
-                                    }
-                                  },
-                                  onEditingComplete: () {},
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+          child: RefreshIndicator(
+            onRefresh: () {
+              return Future.value(true);
+            },
+            child: ListView.builder(
+              itemCount: viewModel.items.length,
+              itemBuilder: (BuildContext ctx, int index) {
+                return Hero(
+                  tag: 'filename${viewModel.items[index].fileName}',
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: ListTile(
+                      title: Text(
+                        viewModel.items[index].fileName,
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                _keyboardVisible
-                    ? BottomStickyActionBar(
-                        children: <Widget>[
-                          BottomStickyActionItem(
-                            child: Icon(
-                              FontAwesomeIcons.bold,
-                              size: 16,
-                            ),
-                            callback: () => addCharacterAndMoveCaret(
-                              character: '****',
-                              offset: 2,
-                            ),
-                          ),
-                          BottomStickyActionItem(
-                            child: Icon(
-                              FontAwesomeIcons.italic,
-                              size: 16,
-                            ),
-                            callback: () => addCharacterAndMoveCaret(
-                              character: '**',
-                              offset: 1,
-                            ),
-                          ),
-                          BottomStickyActionItem(
-                            child: Icon(
-                              FontAwesomeIcons.strikethrough,
-                              size: 16,
-                            ),
-                            callback: () => addCharacterAndMoveCaret(
-                              character: '~~',
-                              offset: 1,
-                            ),
-                          ),
-                          BottomStickyActionItem(
-                            child: Icon(
-                              FontAwesomeIcons.quoteLeft,
-                              size: 16,
-                            ),
-                            callback: () => addCharacterAndMoveCaret(
-                              character: '> ',
-                            ),
-                          ),
-                          BottomStickyActionItem(
-                            child: Icon(
-                              FontAwesomeIcons.hashtag,
-                              size: 16,
-                            ),
-                            callback: () =>
-                                addCharacterAndMoveCaret(character: '#'),
-                          ),
-                          BottomStickyActionItem(
-                            child: Icon(
-                              FontAwesomeIcons.listUl,
-                              size: 16,
-                            ),
-                            callback: () =>
-                                addCharacterAndMoveCaret(character: '- '),
-                          ),
-                          BottomStickyActionItem(
-                            child: Icon(
-                              FontAwesomeIcons.listOl,
-                              size: 16,
-                            ),
-                            callback: () =>
-                                addCharacterAndMoveCaret(character: '1. '),
-                          ),
-                          BottomStickyActionItem(
-                            child: Icon(
-                              FontAwesomeIcons.checkSquare,
-                              size: 16,
-                            ),
-                            callback: () =>
-                                addCharacterAndMoveCaret(character: '- [ ] '),
-                          ),
-                        ],
-                      )
-                    : Container()
-              ],
+                      subtitle: Text(
+                        viewModel.items[index].modified.toString(),
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      onTap: () {
+                        _openNote(viewModel.items[index]);
+                      },
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ),
       ),
-      floatingActionButton: _keyboardVisible
-          ? null
-          : UnicornDialer(
-              parentButtonBackground: Colors.redAccent,
-              orientation: UnicornOrientation.VERTICAL,
-              parentButton: Icon(Icons.add),
-              childButtons: childButtons,
-            ),
-    );
-  }
-
-  List<Widget> buildNoteList() {
-    List<Widget> drawerList = [];
-    DrawerHeader header = DrawerHeader(
-      child: Text('Drawer Header', style: TextStyle(color: Colors.grey)),
-      decoration: BoxDecoration(
-        color: Colors.black,
+      floatingActionButton: UnicornDialer(
+        backgroundColor: Colors.transparent,
+        parentButtonBackground: Colors.black,
+        orientation: UnicornOrientation.VERTICAL,
+        parentButton: Icon(Icons.menu),
+        childButtons: childButtons,
       ),
     );
-    drawerList.add(header);
-    drawerList += (viewModel.items.map((note) {
-      return ListTile(
-        title: Text(
-          note.fileName,
-          overflow: TextOverflow.ellipsis,
-        ),
-        onTap: () {
-          _openNote(note);
-          Navigator.of(context).pop();
-        },
-      );
-    }).toList());
-    return drawerList;
   }
 
   void _openNote(Note note) {
-    _fileOpening = true;
     viewModel.currentNote = note;
-    noteController.text = viewModel.currentNote.content;
-    _fileOpening = false;
-    _log.d('#buildNoteList -> set current note -> ${viewModel.currentNote}');
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) => NoteDetailView(
+          note: viewModel.currentNote,
+        ),
+      ),
+    );
   }
 
   AppBar buildAppBar() {
     return AppBar(
-      title: GestureDetector(
-        onTap: () {},
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            Text('NextNote'),
-            SizedBox(width: 4.0),
-            Icon(
-              FontAwesomeIcons.chevronDown,
-              size: 16,
-            ),
-          ],
-        ),
-      ),
-      backgroundColor: Colors.black,
+      elevation: 0,
+      title: Text('NextNote'),
       actions: <Widget>[
         IconButton(
-          icon: Icon(FontAwesomeIcons.markdown),
-          onPressed: () {},
-        ),
-        IconButton(
-          icon: Icon(FontAwesomeIcons.glasses),
+          icon: Icon(FontAwesomeIcons.cog),
           onPressed: () {},
         )
       ],

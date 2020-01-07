@@ -11,6 +11,7 @@ import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:logger/logger.dart';
 import 'package:next_page/core/logger.dart';
 import 'package:next_page/models/note.dart';
+import 'package:next_page/views/note_detail/note_detail_view.dart';
 import 'package:next_page/widgets/bottom_action_bar.dart';
 import 'package:provider_architecture/provider_architecture.dart';
 import 'package:responsive_builder/responsive_builder.dart';

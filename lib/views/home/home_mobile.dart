@@ -77,6 +77,7 @@ class __HomeMobileState extends State<_HomeMobile> {
       appBar: _keyboardVisible ? null : buildAppBar(),
       drawer: Drawer(
         child: ListView(
+          padding: const EdgeInsets.all(0.0),
           children: buildNoteList(),
         ),
       ),
@@ -132,6 +133,83 @@ class __HomeMobileState extends State<_HomeMobile> {
                           ],
                         ),
                       ),
+                _keyboardVisible
+                    ? BottomStickyActionBar(
+                        children: <Widget>[
+                          BottomStickyActionItem(
+                            child: Icon(
+                              FontAwesomeIcons.bold,
+                              size: 16,
+                            ),
+                            callback: () => addCharacterAndMoveCaret(
+                              character: '****',
+                              offset: 2,
+                            ),
+                          ),
+                          BottomStickyActionItem(
+                            child: Icon(
+                              FontAwesomeIcons.italic,
+                              size: 16,
+                            ),
+                            callback: () => addCharacterAndMoveCaret(
+                              character: '**',
+                              offset: 1,
+                            ),
+                          ),
+                          BottomStickyActionItem(
+                            child: Icon(
+                              FontAwesomeIcons.strikethrough,
+                              size: 16,
+                            ),
+                            callback: () => addCharacterAndMoveCaret(
+                              character: '~~',
+                              offset: 1,
+                            ),
+                          ),
+                          BottomStickyActionItem(
+                            child: Icon(
+                              FontAwesomeIcons.quoteLeft,
+                              size: 16,
+                            ),
+                            callback: () => addCharacterAndMoveCaret(
+                              character: '> ',
+                            ),
+                          ),
+                          BottomStickyActionItem(
+                            child: Icon(
+                              FontAwesomeIcons.hashtag,
+                              size: 16,
+                            ),
+                            callback: () =>
+                                addCharacterAndMoveCaret(character: '#'),
+                          ),
+                          BottomStickyActionItem(
+                            child: Icon(
+                              FontAwesomeIcons.listUl,
+                              size: 16,
+                            ),
+                            callback: () =>
+                                addCharacterAndMoveCaret(character: '- '),
+                          ),
+                          BottomStickyActionItem(
+                            child: Icon(
+                              FontAwesomeIcons.listOl,
+                              size: 16,
+                            ),
+                            callback: () =>
+                                addCharacterAndMoveCaret(character: '1. '),
+                          ),
+                          BottomStickyActionItem(
+                            child: Icon(
+                              FontAwesomeIcons.checkSquare,
+                              size: 16,
+                            ),
+                            callback: () =>
+                                addCharacterAndMoveCaret(character: '- [ ] '),
+                          ),
+                        ],
+                      )
+                    : Container()
               ],
             ),
           ),
@@ -192,9 +270,9 @@ class __HomeMobileState extends State<_HomeMobile> {
   List<Widget> buildNoteList() {
     List<Widget> drawerList = [];
     DrawerHeader header = DrawerHeader(
-      child: Text('Drawer Header'),
+      child: Text('Drawer Header', style: TextStyle(color: Colors.grey)),
       decoration: BoxDecoration(
-        color: Colors.blue,
+        color: Colors.black,
       ),
     );
     drawerList.add(header);

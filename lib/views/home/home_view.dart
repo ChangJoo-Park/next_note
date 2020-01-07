@@ -14,6 +14,7 @@ import 'package:next_page/models/note.dart';
 import 'package:next_page/widgets/bottom_action_bar.dart';
 import 'package:provider_architecture/provider_architecture.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:unicorndial/unicorndial.dart';
 
 import 'home_view_model.dart';
 

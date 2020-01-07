@@ -25,6 +25,7 @@ dependencies:
     flutter_markdown: ^0.3.2
     path_provider: ^1.5.1
     shared_preferences: ^0.5.6
+    unicorndial: "^1.1.5"
 
 dev_dependencies:
     flutter_test:

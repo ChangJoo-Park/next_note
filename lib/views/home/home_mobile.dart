@@ -71,6 +71,76 @@ class __HomeMobileState extends State<_HomeMobile> {
 
   @override
   Widget build(BuildContext context) {
+    var childButtons = List<UnicornButton>();
+
+    childButtons.add(UnicornButton(
+        hasLabel: true,
+        labelText: "Choo choo",
+        currentButton: FloatingActionButton(
+          heroTag: "train",
+          backgroundColor: Colors.redAccent,
+          mini: true,
+          child: Icon(Icons.train),
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('새 노트'),
+                    content: Form(
+                      key: _newNoteFormKey,
+                      child: TextFormField(
+                        initialValue: '${_nowString()}.md',
+                        validator: (String value) {
+                          if (value.isEmpty) {
+                            return 'Please enter some text';
+                          }
+                          return null;
+                        },
+                        onSaved: (String value) {
+                          setState(() {
+                            _newNoteName = value;
+                          });
+                        },
+                      ),
+                    ),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: Text('취소'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      FlatButton(
+                        child: Text('만들기'),
+                        onPressed: () {
+                          if (_newNoteFormKey.currentState.validate()) {
+                            _newNoteFormKey.currentState.save();
+                            viewModel.createNewNote(_newNoteName);
+                          }
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                });
+          },
+        )));
+
+    childButtons.add(UnicornButton(
+        currentButton: FloatingActionButton(
+            heroTag: "airplane",
+            backgroundColor: Colors.greenAccent,
+            mini: true,
+            child: Icon(Icons.airplanemode_active))));
+
+    childButtons.add(UnicornButton(
+        currentButton: FloatingActionButton(
+            heroTag: "directions",
+            backgroundColor: Colors.blueAccent,
+            mini: true,
+            child: Icon(Icons.directions_car))));
+
     return Scaffold(
       resizeToAvoidBottomPadding: true,
       appBar: _keyboardVisible ? null : buildAppBar(),
@@ -233,52 +303,11 @@ class __HomeMobileState extends State<_HomeMobile> {
       ),
       floatingActionButton: _keyboardVisible
           ? null
-          : FloatingActionButton(
-              child: Icon(Icons.accessibility_new),
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('새 노트'),
-                        content: Form(
-                          key: _newNoteFormKey,
-                          child: TextFormField(
-                            initialValue: '${_nowString()}.md',
-                            validator: (String value) {
-                              if (value.isEmpty) {
-                                return 'Please enter some text';
-                              }
-                              return null;
-                            },
-                            onSaved: (String value) {
-                              setState(() {
-                                _newNoteName = value;
-                              });
-                            },
-                          ),
-                        ),
-                        actions: <Widget>[
-                          FlatButton(
-                            child: Text('취소'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          FlatButton(
-                            child: Text('만들기'),
-                            onPressed: () {
-                              if (_newNoteFormKey.currentState.validate()) {
-                                _newNoteFormKey.currentState.save();
-                                viewModel.createNewNote(_newNoteName);
-                              }
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    });
-              },
+          : UnicornDialer(
+              parentButtonBackground: Colors.redAccent,
+              orientation: UnicornOrientation.VERTICAL,
+              parentButton: Icon(Icons.add),
+              childButtons: childButtons,
             ),
     );
   }

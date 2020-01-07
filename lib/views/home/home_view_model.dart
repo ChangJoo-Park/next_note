@@ -1,56 +1,91 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
+import 'package:logger/logger.dart';
 import 'package:next_page/core/base/base_view_model.dart';
-import 'package:next_page/models/item.dart';
+import 'package:next_page/core/logger.dart';
+import 'package:next_page/models/note.dart';
+import 'package:next_page/note_storage.dart';
+import 'package:path/path.dart' as path;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeViewModel extends BaseViewModel {
-  ItemProvider _itemProvider = ItemProvider();
+  Logger _log = getLogger('HomeViewModel');
+  NoteStorage _noteStorage;
+  List<Note> _items = [];
+  Note _currentNote;
 
-  List<Item> _items = [];
-  Item _currentItem;
-  String _itemStatus;
+  initialize() async {
+    _noteStorage = NoteStorage();
+    await _noteStorage.initializationDone;
 
-  HomeViewModel({List<Item> items, Item currentItem}) {
-    this._items = items;
-    this._currentItem = currentItem;
-  }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  ItemProvider get itemProvider => this._itemProvider;
+    if (!prefs.containsKey('initialized')) {
+      _noteStorage.writeFile('getting-started.md',
+          await rootBundle.loadString('assets/notes/getting-started.md'));
+      _log.d('#initialize -> write getting started');
+      // TODO: SET Initialized key true
+    }
 
-  Item get currentItem => this._currentItem;
-  set currentItem(Item value) {
-    this._currentItem = value;
+    _loadNotes();
+
+    // Create New One when empty list
+    _log.d('#initialize -> load ${_items.length} notes');
     notifyListeners();
   }
 
-  String get itemStatus => this._itemStatus;
-  set itemStatus(String value) {
-    this._itemStatus = value;
+  void _loadNotes() {
+    List<FileSystemEntity> files = _noteStorage.readDirectory();
+    this._items = files
+        .where((fileEntity) => fileEntity.path.contains('.md'))
+        .map((markdownFileEntity) => File(markdownFileEntity.path))
+        .map(
+      (markdownFile) {
+        FileStat noteFileStat = markdownFile.statSync();
+        return Note(
+          filePath: markdownFile.path,
+          fileName: path.basename(markdownFile.path),
+          content: '',
+          accessed: noteFileStat.accessed,
+          changed: noteFileStat.changed,
+          modified: noteFileStat.modified,
+          size: noteFileStat.size,
+        );
+      },
+    ).toList();
+  }
+
+  Note get currentNote => this._currentNote;
+  set currentNote(Note note) {
+    this._currentNote = note;
+    this._currentNote.content =
+        _noteStorage.readFile(note.fileName).readAsStringSync();
     notifyListeners();
   }
 
-  List<Item> get items => this._items;
-  set items(List<Item> value) {
+  List<Note> get items => this._items;
+  set items(List<Note> value) {
     this._items = value;
     notifyListeners();
   }
 
-  createNewItem() async {
-    _currentItem = await _itemProvider.create(Item());
-    _itemStatus = null;
-    await loadItems();
+  createNewNote(String fileName) async {
+    _log.d('#createNewNote -> $fileName');
+    await _noteStorage.writeFile(fileName, '');
+    _loadNotes();
     notifyListeners();
   }
 
-  Item get firstItem => this._items.first;
+  Note get firstItem => this._items.first;
 
-  Future<int> updateItem(Item item) async {
-    int id = await _itemProvider.update(item);
-    await loadItems();
+  Future<void> updateNote(Note note) async {
+    _log.d('#updateNote -> ');
+    await _noteStorage.writeFile(note.fileName, note.content);
     notifyListeners();
-    return id;
   }
 
   loadItems() async {
-    items = await itemProvider.getItems();
     notifyListeners();
   }
 }

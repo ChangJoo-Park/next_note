@@ -190,6 +190,9 @@ class __HomeMobileState extends State<_HomeMobile> {
 
   void _openNote(Note note) {
     viewModel.currentNote = note;
+    _log.d('current note');
+    _log.d(viewModel.currentNote.content);
+    _log.d(viewModel.currentNote.filePath);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) => NoteDetailView(
@@ -223,38 +226,6 @@ class __HomeMobileState extends State<_HomeMobile> {
   void _setCurrentItemToController() {
     // titleController.text = viewModel.currentItem.title;
     // noteController.text = viewModel.currentItem.note;
-  }
-
-  void addCharacterAndMoveCaret({String character, int offset = 0}) {
-    int curSelectionStart = noteController.selection.start;
-    int curSelectionEnd = noteController.selection.end;
-    int curTextLength = noteController.text.length;
-    String midText = '';
-    int position = 0;
-
-    String leftText = noteController.text.substring(0, curSelectionStart);
-    String selectionWord =
-        noteController.text.substring(curSelectionStart, curSelectionEnd);
-    String rightText =
-        noteController.text.substring(curSelectionEnd, curTextLength);
-
-    if (offset > 0) {
-      midText = character.substring(0, offset) +
-          selectionWord +
-          character.substring(offset, character.length);
-      position = curSelectionStart + selectionWord.length + offset;
-    } else {
-      midText = character;
-      position = curSelectionStart + midText.length;
-    }
-    String text = leftText + midText + rightText;
-    TextSelection selection = TextSelection.fromPosition(
-      TextPosition(offset: position),
-    );
-    noteController.value = TextEditingValue(
-      text: text,
-      selection: selection,
-    );
   }
 
   String _nowString() {

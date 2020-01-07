@@ -23,6 +23,12 @@ class HomeViewModel extends BaseViewModel {
     await _noteStorage.initializationDone;
 
     prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('initialized')) {
+      _noteStorage.writeFile('getting-started.md',
+          await rootBundle.loadString('assets/notes/getting-started.md'));
+      _log.d('#initialize -> write getting started');
+      // TODO: SET Initialized key true
+    }
 
     _loadNotes();
 
@@ -62,6 +68,7 @@ class HomeViewModel extends BaseViewModel {
     this._currentNote = note;
     this._currentNote.content =
         _noteStorage.readFile(note.fileName).readAsStringSync();
+    _log.d(this._currentNote.content);
     notifyListeners();
   }
 

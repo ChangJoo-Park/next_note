@@ -14,25 +14,26 @@ class HomeViewModel extends BaseViewModel {
   NoteStorage _noteStorage;
   List<Note> _items = [];
   Note _currentNote;
+  String _currentNoteStatus = '';
+  SharedPreferences prefs;
+  bool done = false;
 
   initialize() async {
     _noteStorage = NoteStorage();
     await _noteStorage.initializationDone;
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    if (!prefs.containsKey('initialized')) {
-      _noteStorage.writeFile('getting-started.md',
-          await rootBundle.loadString('assets/notes/getting-started.md'));
-      _log.d('#initialize -> write getting started');
-      // TODO: SET Initialized key true
-    }
+    prefs = await SharedPreferences.getInstance();
 
     _loadNotes();
 
     // Create New One when empty list
-    _log.d('#initialize -> load ${_items.length} notes');
+
     notifyListeners();
+  }
+
+  String get currentNoteStatus => _currentNoteStatus;
+  set currentNoteStatus(String value) {
+    this.currentNoteStatus = value;
   }
 
   void _loadNotes() {
@@ -71,7 +72,6 @@ class HomeViewModel extends BaseViewModel {
   }
 
   createNewNote(String fileName) async {
-    _log.d('#createNewNote -> $fileName');
     await _noteStorage.writeFile(fileName, '');
     _loadNotes();
     notifyListeners();
@@ -80,7 +80,6 @@ class HomeViewModel extends BaseViewModel {
   Note get firstItem => this._items.first;
 
   Future<void> updateNote(Note note) async {
-    _log.d('#updateNote -> ');
     await _noteStorage.writeFile(note.fileName, note.content);
     notifyListeners();
   }

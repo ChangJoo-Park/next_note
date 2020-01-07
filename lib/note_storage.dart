@@ -15,11 +15,8 @@ class NoteStorage {
   }
 
   _init() async {
-    _log.d('#init -> get directory path');
     _localDirectory = await getApplicationDocumentsDirectory();
     _localPath = _localDirectory.path;
-    _log.d('#init -> _localDirectory $_localDirectory');
-    _log.d('#init -> _localPath $_localPath');
   }
 
   Future get initializationDone => _doneInitialize;

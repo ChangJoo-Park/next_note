@@ -9,7 +9,8 @@ class _NoteDetailMobile extends StatefulWidget {
   __NoteDetailMobileState createState() => __NoteDetailMobileState(viewModel);
 }
 
-class __NoteDetailMobileState extends State<_NoteDetailMobile> {
+class __NoteDetailMobileState extends State<_NoteDetailMobile>
+    with WidgetsBindingObserver {
   final NoteDetailViewModel viewModel;
   final Logger _log = getLogger('_NoteDetailMobile');
   bool _keyboardVisible = false;
@@ -19,13 +20,14 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile> {
       FocusNode(debugLabel: 'NOTE_FOCUS_NODE', canRequestFocus: true);
   final TextEditingController noteController = TextEditingController();
   Timer _debounce;
+  AppLifecycleState _notification;
 
   __NoteDetailMobileState(this.viewModel);
 
   @override
   initState() {
     super.initState();
-    _log.d('init state');
+    WidgetsBinding.instance.addObserver(this);
     noteController.text = viewModel.currentNote.content;
     _listener = KeyboardVisibilityNotification().addNewListener(
       onChange: _onKeyboardVisibility,
@@ -36,7 +38,36 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile> {
   void dispose() {
     _cancelDebounce();
     KeyboardVisibilityNotification().removeListener(_listener);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    setState(() {
+      _notification = state;
+    });
+
+    switch (_notification) {
+      case AppLifecycleState.paused:
+        _log.d('AppLifecycleState.paused');
+        break;
+      case AppLifecycleState.resumed:
+        _log.d('AppLifecycleState.resumed');
+        break;
+      case AppLifecycleState.inactive:
+        _log.d('AppLifecycleState.inactive');
+        _cancelDebounce();
+        _log.d('cancelDebounce');
+        await _saveNote();
+        _log.d('after save note');
+        break;
+      case AppLifecycleState.detached:
+        _log.d('AppLifecycleState.detached');
+        break;
+      default:
+        break;
+    }
   }
 
   @override
@@ -46,6 +77,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile> {
       body: WillPopScope(
         onWillPop: () async {
           _cancelDebounce();
+          _log.d('Saved when pop');
           await _saveNote();
           return Future.value(true);
         },
@@ -54,153 +86,186 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile> {
             SafeArea(
               child: PageView(
                 children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.all(16.0),
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          child: Hero(
-                            tag:
-                                'filename${widget.viewModel.currentNote.fileName}',
-                            child: Material(
-                              type: MaterialType.transparency,
-                              child: Text(
-                                widget.viewModel.currentNote.fileName,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Form(
-                            key: _formKey,
-                            child: TextField(
-                              controller: noteController,
-                              focusNode: noteFocusNode,
-                              cursorColor: Colors.black,
-                              style: TextStyle(fontFamily: 'Monospace'),
-                              decoration: InputDecoration(
-                                hintText: "Insert your message",
-                                border: InputBorder.none,
-                              ),
-                              scrollPadding: EdgeInsets.all(20.0),
-                              keyboardType: TextInputType.multiline,
-                              maxLines: 99999,
-                              autofocus: false,
-                              onChanged: (String value) {
-                                _onNoteChanged();
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
+                  Stack(children: [
+                    Positioned(
+                      top: 4.0,
+                      right: 4.0,
+                      child: IconButton(
+                        icon: Icon(Icons.share),
+                        onPressed: () {
+                          Share.share(noteController.text);
+                        },
+                      ),
                     ),
-                  ),
+                    Container(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        children: <Widget>[
+                          _buildFileName(),
+                          _buildTextFieldWidget(),
+                        ],
+                      ),
+                    ),
+                  ]),
                   // Markdown(data: noteController.text),
                 ],
               ),
             ),
-            BottomStickyActionBar(
-              children: <Widget>[
-                BottomStickyActionItem(
-                  child: Icon(
-                    FontAwesomeIcons.bold,
-                    size: 16,
-                  ),
-                  callback: () => addCharacterAndMoveCaret(
-                    character: '****',
-                    offset: 2,
-                  ),
-                ),
-                BottomStickyActionItem(
-                  child: Icon(
-                    FontAwesomeIcons.italic,
-                    size: 16,
-                  ),
-                  callback: () => addCharacterAndMoveCaret(
-                    character: '**',
-                    offset: 1,
-                  ),
-                ),
-                BottomStickyActionItem(
-                  child: Icon(
-                    FontAwesomeIcons.strikethrough,
-                    size: 16,
-                  ),
-                  callback: () => addCharacterAndMoveCaret(
-                    character: '~~',
-                    offset: 1,
-                  ),
-                ),
-                BottomStickyActionItem(
-                  child: Icon(
-                    FontAwesomeIcons.quoteLeft,
-                    size: 16,
-                  ),
-                  callback: () => addCharacterAndMoveCaret(
-                    character: '> ',
-                  ),
-                ),
-                BottomStickyActionItem(
-                  child: Icon(
-                    FontAwesomeIcons.hashtag,
-                    size: 16,
-                  ),
-                  callback: () => addCharacterAndMoveCaret(character: '#'),
-                ),
-                BottomStickyActionItem(
-                  child: Icon(
-                    FontAwesomeIcons.listUl,
-                    size: 16,
-                  ),
-                  callback: () => addCharacterAndMoveCaret(character: '- '),
-                ),
-                BottomStickyActionItem(
-                  child: Icon(
-                    FontAwesomeIcons.listOl,
-                    size: 16,
-                  ),
-                  callback: () => addCharacterAndMoveCaret(character: '1. '),
-                ),
-                BottomStickyActionItem(
-                  child: Icon(
-                    FontAwesomeIcons.checkSquare,
-                    size: 16,
-                  ),
-                  callback: () => addCharacterAndMoveCaret(character: '- [ ] '),
-                ),
-                BottomStickyActionItem(
-                  child: Icon(
-                    FontAwesomeIcons.calendarDay,
-                    size: 16,
-                  ),
-                  callback: () => addCharacterAndMoveCaret(
-                    character: _dateTimeFormatString(
-                      date: DateTime.now(),
-                      format: [yyyy, '-', mm, '-', dd],
-                    ),
-                  ),
-                ),
-                BottomStickyActionItem(
-                  child: Icon(
-                    FontAwesomeIcons.clock,
-                    size: 16,
-                  ),
-                  callback: () => addCharacterAndMoveCaret(
-                    character: _dateTimeFormatString(
-                      date: DateTime.now(),
-                      format: [HH, ':', nn, ' ', am],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            _buildBottomStickyActionBar(),
           ],
         ),
       ),
+    );
+  }
+
+  Expanded _buildTextFieldWidget() {
+    return Expanded(
+      flex: 1,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 24.0),
+        child: Form(
+          key: _formKey,
+          child: TextField(
+            controller: noteController,
+            focusNode: noteFocusNode,
+            cursorColor: Colors.black,
+            style: TextStyle(fontFamily: 'Monospace'),
+            decoration: InputDecoration(
+              hintText: "Insert your message",
+              border: InputBorder.none,
+            ),
+            scrollPadding: EdgeInsets.all(20.0),
+            keyboardType: TextInputType.multiline,
+            maxLines: 99999,
+            autofocus: false,
+            onChanged: (String value) {
+              _onNoteChanged();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Container _buildFileName() {
+    return Container(
+      child: Hero(
+        tag: 'filename${widget.viewModel.currentNote.fileName}',
+        child: Material(
+          type: MaterialType.transparency,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              color: Colors.grey,
+            ),
+            child: Text(
+              widget.viewModel.currentNote.fileName,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  BottomStickyActionBar _buildBottomStickyActionBar() {
+    return BottomStickyActionBar(
+      children: <Widget>[
+        BottomStickyActionItem(
+          child: Icon(
+            FontAwesomeIcons.bold,
+            size: 16,
+          ),
+          callback: () => addCharacterAndMoveCaret(
+            character: '****',
+            offset: 2,
+          ),
+        ),
+        BottomStickyActionItem(
+          child: Icon(
+            FontAwesomeIcons.italic,
+            size: 16,
+          ),
+          callback: () => addCharacterAndMoveCaret(
+            character: '**',
+            offset: 1,
+          ),
+        ),
+        BottomStickyActionItem(
+          child: Icon(
+            FontAwesomeIcons.strikethrough,
+            size: 16,
+          ),
+          callback: () => addCharacterAndMoveCaret(
+            character: '~~',
+            offset: 1,
+          ),
+        ),
+        BottomStickyActionItem(
+          child: Icon(
+            FontAwesomeIcons.quoteLeft,
+            size: 16,
+          ),
+          callback: () => addCharacterAndMoveCaret(
+            character: '> ',
+          ),
+        ),
+        BottomStickyActionItem(
+          child: Icon(
+            FontAwesomeIcons.hashtag,
+            size: 16,
+          ),
+          callback: () => addCharacterAndMoveCaret(character: '#'),
+        ),
+        BottomStickyActionItem(
+          child: Icon(
+            FontAwesomeIcons.listUl,
+            size: 16,
+          ),
+          callback: () => addCharacterAndMoveCaret(character: '- '),
+        ),
+        BottomStickyActionItem(
+          child: Icon(
+            FontAwesomeIcons.listOl,
+            size: 16,
+          ),
+          callback: () => addCharacterAndMoveCaret(character: '1. '),
+        ),
+        BottomStickyActionItem(
+          child: Icon(
+            FontAwesomeIcons.checkSquare,
+            size: 16,
+          ),
+          callback: () => addCharacterAndMoveCaret(character: '- [ ] '),
+        ),
+        BottomStickyActionItem(
+          child: Icon(
+            FontAwesomeIcons.calendarDay,
+            size: 16,
+          ),
+          callback: () => addCharacterAndMoveCaret(
+            character: _dateTimeFormatString(
+              date: DateTime.now(),
+              format: [yyyy, '-', mm, '-', dd],
+            ),
+          ),
+        ),
+        BottomStickyActionItem(
+          child: Icon(
+            FontAwesomeIcons.clock,
+            size: 16,
+          ),
+          callback: () => addCharacterAndMoveCaret(
+            character: _dateTimeFormatString(
+              date: DateTime.now(),
+              format: [HH, ':', nn, ' ', am],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -212,11 +277,13 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile> {
   }
 
   void _onNoteChanged({String value}) {
+    _log.d('_onNoteChanged');
     if (viewModel.currentNote == null) {
       return;
     }
     if (_debounce?.isActive ?? false) _debounce.cancel();
-    _debounce = Timer(const Duration(milliseconds: 1000), () async {
+    _debounce = Timer(const Duration(milliseconds: 500), () async {
+      _log.d('Saved automatically');
       await _saveNote();
     });
   }

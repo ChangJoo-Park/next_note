@@ -10,6 +10,7 @@ import 'package:logger/logger.dart';
 import 'package:next_page/core/logger.dart';
 import 'package:next_page/models/note.dart';
 import 'package:next_page/widgets/bottom_action_bar.dart';
+import 'package:next_page/widgets/no_glow_scroll_behavior.dart';
 import 'package:provider_architecture/provider_architecture.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:share/share.dart';

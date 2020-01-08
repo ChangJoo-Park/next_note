@@ -118,29 +118,32 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
     );
   }
 
-  Expanded _buildTextFieldWidget() {
-    return Expanded(
-      flex: 1,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 24.0),
-        child: Form(
-          key: _formKey,
-          child: TextField(
-            controller: noteController,
-            focusNode: noteFocusNode,
-            cursorColor: Colors.black,
-            style: TextStyle(fontFamily: 'Monospace'),
-            decoration: InputDecoration(
-              hintText: "Insert your message",
-              border: InputBorder.none,
+  Widget _buildTextFieldWidget() {
+    return ScrollConfiguration(
+      behavior: NoGlowScrollBehavior(),
+      child: Expanded(
+        flex: 1,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 24.0),
+          child: Form(
+            key: _formKey,
+            child: TextField(
+              controller: noteController,
+              focusNode: noteFocusNode,
+              cursorColor: Colors.black,
+              style: TextStyle(fontFamily: 'Monospace'),
+              decoration: InputDecoration(
+                hintText: "Insert your message",
+                border: InputBorder.none,
+              ),
+              scrollPadding: EdgeInsets.all(20.0),
+              keyboardType: TextInputType.multiline,
+              maxLines: 99999,
+              autofocus: false,
+              onChanged: (String value) {
+                _onNoteChanged();
+              },
             ),
-            scrollPadding: EdgeInsets.all(20.0),
-            keyboardType: TextInputType.multiline,
-            maxLines: 99999,
-            autofocus: false,
-            onChanged: (String value) {
-              _onNoteChanged();
-            },
           ),
         ),
       ),

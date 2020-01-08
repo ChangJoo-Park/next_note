@@ -3,7 +3,7 @@ library note_detail_view;
 import 'dart:async';
 
 import 'package:date_format/date_format.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:logger/logger.dart';
@@ -12,12 +12,13 @@ import 'package:next_page/models/note.dart';
 import 'package:next_page/widgets/bottom_action_bar.dart';
 import 'package:provider_architecture/provider_architecture.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:flutter/material.dart';
+import 'package:share/share.dart';
+
 import 'note_detail_view_model.dart';
 
+part 'note_detail_desktop.dart';
 part 'note_detail_mobile.dart';
 part 'note_detail_tablet.dart';
-part 'note_detail_desktop.dart';
 
 class NoteDetailView extends StatelessWidget {
   final Note note;

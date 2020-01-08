@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+
 import 'core/locator.dart';
 import 'core/providers.dart';
 import 'core/services/navigator_service.dart';
@@ -9,6 +11,9 @@ import 'package:dotenv/dotenv.dart' show load, env;
 void main() async {
   load('development.env');
   await LocatorInjector.setupLocator();
+  SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+
   runApp(MainApplication());
 }
 

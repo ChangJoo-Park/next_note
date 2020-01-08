@@ -108,52 +108,41 @@ class __HomeMobileState extends State<_HomeMobile> {
               viewModel.loadItems();
               return Future.value(true);
             },
-            child: ListView.builder(
-              itemCount: viewModel.items.length,
-              itemBuilder: (BuildContext ctx, int index) {
-                return Hero(
-                  tag: 'filename${viewModel.items[index].fileName}',
-                  child: Material(
-                    type: MaterialType.transparency,
-                    child: ListTile(
-                      title: Text(
-                        viewModel.items[index].fileName,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(
-                        viewModel.items[index].modified.toString(),
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      onTap: () {
-                        _openNote(viewModel.items[index]);
-                      },
-                      onLongPress: () {
-                        _log.d('on long press');
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext ctx) {
-                            return AlertDialog(
-                              title: Text(viewModel.items[index].fileName),
-                              actions: <Widget>[
-                                FlatButton(
-                                  onPressed: () {
-                                    viewModel
-                                        .removeNote(viewModel.items[index]);
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('DELETE'),
-                                ),
-                                FlatButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('CLOSE'),
-                                )
-                              ],
-                            );
+            child: AutoAnimatedList(
+              // Start animation after (default zero)
+              delay: Duration(milliseconds: 500),
+              // Show each item through
+              showItemInterval: Duration(milliseconds: 200),
+              // Animation duration
+              showItemDuration: Duration(milliseconds: 500),
+              itemCount: viewModel.sortByUpdatedItems.length,
+              itemBuilder:
+                  (BuildContext ctx, int index, Animation<double> animation) {
+                Note note = viewModel.sortByUpdatedItems[index];
+                return FadeTransition(
+                  opacity: Tween<double>(
+                    begin: 0,
+                    end: 1,
+                  ).animate(animation),
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: Offset(0, -0.1),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: Hero(
+                      tag: 'filename${note.fileName}',
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: NoteListTile(
+                          note: note,
+                          onTap: () {
+                            _openNote(note);
                           },
-                        );
-                      },
+                          onLongPress: () {
+                            _openNoteDeleteDialog(context, note);
+                          },
+                        ),
+                      ),
                     ),
                   ),
                 );
@@ -176,6 +165,32 @@ class __HomeMobileState extends State<_HomeMobile> {
           _openNewNoteModal(context);
         },
       ),
+    );
+  }
+
+  Future _openNoteDeleteDialog(BuildContext context, Note note) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: Text(note.fileName),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                viewModel.removeNote(note);
+                Navigator.of(context).pop();
+              },
+              child: Text('DELETE'),
+            ),
+            FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('CLOSE'),
+            )
+          ],
+        );
+      },
     );
   }
 
@@ -226,39 +241,42 @@ class __HomeMobileState extends State<_HomeMobile> {
 
   void _openNote(Note note) {
     viewModel.currentNote = note;
-    Navigator.of(context).push(
+    Navigator.of(context)
+        .push(
       MaterialPageRoute(
         builder: (BuildContext context) => NoteDetailView(
           note: viewModel.currentNote,
         ),
       ),
+    )
+        .then(
+      (value) {
+        viewModel.loadItems();
+      },
     );
   }
 
   AppBar buildAppBar() {
     return AppBar(
       elevation: 0,
-      title: Text('NextNote'),
+      title: Text('NextPage'),
       actions: <Widget>[
         IconButton(
           icon: Icon(FontAwesomeIcons.cog),
-          onPressed: () {},
+          onPressed: () {
+            _openSettingView();
+          },
         )
       ],
     );
   }
 
-  void _createNewNote() async {
-    // titleController.text = '';
-    // noteController.text = '';
-    // await viewModel.createNewItem();
-    // _setCurrentItemToController();
-    // noteFocusNode.requestFocus();
-  }
-
-  void _setCurrentItemToController() {
-    // titleController.text = viewModel.currentItem.title;
-    // noteController.text = viewModel.currentItem.note;
+  void _openSettingView() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) => SettingView(),
+      ),
+    );
   }
 
   String _nowString() {

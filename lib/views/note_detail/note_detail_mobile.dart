@@ -103,108 +103,101 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile> {
                 ],
               ),
             ),
-            // Keyboard
-            _keyboardVisible
-                ? BottomStickyActionBar(
-                    children: <Widget>[
-                      BottomStickyActionItem(
-                        child: Icon(
-                          FontAwesomeIcons.bold,
-                          size: 16,
-                        ),
-                        callback: () => addCharacterAndMoveCaret(
-                          character: '****',
-                          offset: 2,
-                        ),
-                      ),
-                      BottomStickyActionItem(
-                        child: Icon(
-                          FontAwesomeIcons.italic,
-                          size: 16,
-                        ),
-                        callback: () => addCharacterAndMoveCaret(
-                          character: '**',
-                          offset: 1,
-                        ),
-                      ),
-                      BottomStickyActionItem(
-                        child: Icon(
-                          FontAwesomeIcons.strikethrough,
-                          size: 16,
-                        ),
-                        callback: () => addCharacterAndMoveCaret(
-                          character: '~~',
-                          offset: 1,
-                        ),
-                      ),
-                      BottomStickyActionItem(
-                        child: Icon(
-                          FontAwesomeIcons.quoteLeft,
-                          size: 16,
-                        ),
-                        callback: () => addCharacterAndMoveCaret(
-                          character: '> ',
-                        ),
-                      ),
-                      BottomStickyActionItem(
-                        child: Icon(
-                          FontAwesomeIcons.hashtag,
-                          size: 16,
-                        ),
-                        callback: () =>
-                            addCharacterAndMoveCaret(character: '#'),
-                      ),
-                      BottomStickyActionItem(
-                        child: Icon(
-                          FontAwesomeIcons.listUl,
-                          size: 16,
-                        ),
-                        callback: () =>
-                            addCharacterAndMoveCaret(character: '- '),
-                      ),
-                      BottomStickyActionItem(
-                        child: Icon(
-                          FontAwesomeIcons.listOl,
-                          size: 16,
-                        ),
-                        callback: () =>
-                            addCharacterAndMoveCaret(character: '1. '),
-                      ),
-                      BottomStickyActionItem(
-                        child: Icon(
-                          FontAwesomeIcons.checkSquare,
-                          size: 16,
-                        ),
-                        callback: () =>
-                            addCharacterAndMoveCaret(character: '- [ ] '),
-                      ),
-                      BottomStickyActionItem(
-                        child: Icon(
-                          FontAwesomeIcons.calendarDay,
-                          size: 16,
-                        ),
-                        callback: () => addCharacterAndMoveCaret(
-                          character: _dateTimeFormatString(
-                            date: DateTime.now(),
-                            format: [yyyy, '-', mm, '-', dd],
-                          ),
-                        ),
-                      ),
-                      BottomStickyActionItem(
-                        child: Icon(
-                          FontAwesomeIcons.clock,
-                          size: 16,
-                        ),
-                        callback: () => addCharacterAndMoveCaret(
-                          character: _dateTimeFormatString(
-                            date: DateTime.now(),
-                            format: [HH, ':', nn, ' ', am],
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : Container(),
+            BottomStickyActionBar(
+              children: <Widget>[
+                BottomStickyActionItem(
+                  child: Icon(
+                    FontAwesomeIcons.bold,
+                    size: 16,
+                  ),
+                  callback: () => addCharacterAndMoveCaret(
+                    character: '****',
+                    offset: 2,
+                  ),
+                ),
+                BottomStickyActionItem(
+                  child: Icon(
+                    FontAwesomeIcons.italic,
+                    size: 16,
+                  ),
+                  callback: () => addCharacterAndMoveCaret(
+                    character: '**',
+                    offset: 1,
+                  ),
+                ),
+                BottomStickyActionItem(
+                  child: Icon(
+                    FontAwesomeIcons.strikethrough,
+                    size: 16,
+                  ),
+                  callback: () => addCharacterAndMoveCaret(
+                    character: '~~',
+                    offset: 1,
+                  ),
+                ),
+                BottomStickyActionItem(
+                  child: Icon(
+                    FontAwesomeIcons.quoteLeft,
+                    size: 16,
+                  ),
+                  callback: () => addCharacterAndMoveCaret(
+                    character: '> ',
+                  ),
+                ),
+                BottomStickyActionItem(
+                  child: Icon(
+                    FontAwesomeIcons.hashtag,
+                    size: 16,
+                  ),
+                  callback: () => addCharacterAndMoveCaret(character: '#'),
+                ),
+                BottomStickyActionItem(
+                  child: Icon(
+                    FontAwesomeIcons.listUl,
+                    size: 16,
+                  ),
+                  callback: () => addCharacterAndMoveCaret(character: '- '),
+                ),
+                BottomStickyActionItem(
+                  child: Icon(
+                    FontAwesomeIcons.listOl,
+                    size: 16,
+                  ),
+                  callback: () => addCharacterAndMoveCaret(character: '1. '),
+                ),
+                BottomStickyActionItem(
+                  child: Icon(
+                    FontAwesomeIcons.checkSquare,
+                    size: 16,
+                  ),
+                  callback: () => addCharacterAndMoveCaret(character: '- [ ] '),
+                ),
+                BottomStickyActionItem(
+                  child: Icon(
+                    FontAwesomeIcons.calendarDay,
+                    size: 16,
+                  ),
+                  callback: () => addCharacterAndMoveCaret(
+                    character: _dateTimeFormatString(
+                      date: DateTime.now(),
+                      format: [yyyy, '-', mm, '-', dd],
+                    ),
+                  ),
+                ),
+                BottomStickyActionItem(
+                  child: Icon(
+                    FontAwesomeIcons.clock,
+                    size: 16,
+                  ),
+                  callback: () => addCharacterAndMoveCaret(
+                    character: _dateTimeFormatString(
+                      date: DateTime.now(),
+                      format: [HH, ':', nn, ' ', am],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),

@@ -99,7 +99,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile> {
                       ],
                     ),
                   ),
-                  Markdown(data: noteController.text),
+                  // Markdown(data: noteController.text),
                 ],
               ),
             ),
@@ -178,6 +178,30 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile> {
                         callback: () =>
                             addCharacterAndMoveCaret(character: '- [ ] '),
                       ),
+                      BottomStickyActionItem(
+                        child: Icon(
+                          FontAwesomeIcons.calendarDay,
+                          size: 16,
+                        ),
+                        callback: () => addCharacterAndMoveCaret(
+                          character: _dateTimeFormatString(
+                            date: DateTime.now(),
+                            format: [yyyy, '-', mm, '-', dd],
+                          ),
+                        ),
+                      ),
+                      BottomStickyActionItem(
+                        child: Icon(
+                          FontAwesomeIcons.clock,
+                          size: 16,
+                        ),
+                        callback: () => addCharacterAndMoveCaret(
+                          character: _dateTimeFormatString(
+                            date: DateTime.now(),
+                            format: [HH, ':', nn, ' ', am],
+                          ),
+                        ),
+                      ),
                     ],
                   )
                 : Container(),
@@ -246,5 +270,20 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile> {
       text: text,
       selection: selection,
     );
+  }
+
+  String _dateTimeFormatString({DateTime date, List<String> format}) {
+    DateTime targetDateTime = date;
+    if (targetDateTime == null) {
+      targetDateTime = DateTime.now();
+    }
+
+    List<String> targetFormat = format;
+
+    if (format == null) {
+      targetFormat = [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn, ' ', am];
+    }
+
+    return formatDate(targetDateTime, targetFormat);
   }
 }

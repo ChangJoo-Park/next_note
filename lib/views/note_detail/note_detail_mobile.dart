@@ -174,7 +174,10 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
     );
   }
 
-  BottomStickyActionBar _buildBottomStickyActionBar() {
+  Widget _buildBottomStickyActionBar() {
+    if (!_keyboardVisible) {
+      return Container();
+    }
     return BottomStickyActionBar(
       children: <Widget>[
         BottomStickyActionItem(
@@ -297,10 +300,11 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
   }
 
   _onKeyboardVisibility(bool visible) {
+    _log.d('_onKeyboardVisibility');
     setState(() {
       this._keyboardVisible = visible;
     });
-    if (!this._keyboardVisible) {}
+    _log.d('_onKeyboardVisibility -> $_keyboardVisible');
   }
 
   void addCharacterAndMoveCaret({String character, int offset = 0}) {

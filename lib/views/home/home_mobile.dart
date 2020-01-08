@@ -111,48 +111,18 @@ class __HomeMobileState extends State<_HomeMobile> {
             child: ListView.builder(
               itemCount: viewModel.items.length,
               itemBuilder: (BuildContext ctx, int index) {
+                Note note = viewModel.items[index];
                 return Hero(
-                  tag: 'filename${viewModel.items[index].fileName}',
+                  tag: 'filename${note.fileName}',
                   child: Material(
                     type: MaterialType.transparency,
-                    child: ListTile(
-                      title: Text(
-                        viewModel.items[index].fileName,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(
-                        viewModel.items[index].modified.toString(),
-                        style: TextStyle(color: Colors.black),
-                      ),
+                    child: NoteListTile(
+                      note: note,
                       onTap: () {
-                        _openNote(viewModel.items[index]);
+                        _openNote(note);
                       },
                       onLongPress: () {
-                        _log.d('on long press');
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext ctx) {
-                            return AlertDialog(
-                              title: Text(viewModel.items[index].fileName),
-                              actions: <Widget>[
-                                FlatButton(
-                                  onPressed: () {
-                                    viewModel
-                                        .removeNote(viewModel.items[index]);
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('DELETE'),
-                                ),
-                                FlatButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('CLOSE'),
-                                )
-                              ],
-                            );
-                          },
-                        );
+                        _openNoteDeleteDialog(context, note);
                       },
                     ),
                   ),
@@ -176,6 +146,32 @@ class __HomeMobileState extends State<_HomeMobile> {
           _openNewNoteModal(context);
         },
       ),
+    );
+  }
+
+  Future _openNoteDeleteDialog(BuildContext context, Note note) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: Text(note.fileName),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                viewModel.removeNote(note);
+                Navigator.of(context).pop();
+              },
+              child: Text('DELETE'),
+            ),
+            FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('CLOSE'),
+            )
+          ],
+        );
+      },
     );
   }
 
@@ -263,5 +259,30 @@ class __HomeMobileState extends State<_HomeMobile> {
     List<String> format = [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn, ' ', am];
     String nowString = formatDate(now, format);
     return nowString;
+  }
+}
+
+class NoteListTile extends StatelessWidget {
+  const NoteListTile({
+    Key key,
+    @required this.note,
+    this.onTap,
+    this.onLongPress,
+  }) : super(key: key);
+
+  final Note note;
+  final VoidCallback onTap;
+  final VoidCallback onLongPress;
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(
+        note.fileName,
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text(note.modified.toString()),
+      onTap: onTap,
+      onLongPress: onLongPress,
+    );
   }
 }

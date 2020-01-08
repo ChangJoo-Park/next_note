@@ -3,6 +3,7 @@ library home_view;
 import 'dart:async';
 import 'dart:io';
 
+import 'package:auto_animated/auto_animated.dart';
 import 'package:date_format/date_format.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/material.dart';

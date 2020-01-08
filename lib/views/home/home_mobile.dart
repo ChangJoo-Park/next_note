@@ -108,22 +108,41 @@ class __HomeMobileState extends State<_HomeMobile> {
               viewModel.loadItems();
               return Future.value(true);
             },
-            child: ListView.builder(
+            child: AutoAnimatedList(
+              // Start animation after (default zero)
+              delay: Duration(milliseconds: 500),
+              // Show each item through
+              showItemInterval: Duration(milliseconds: 200),
+              // Animation duration
+              showItemDuration: Duration(milliseconds: 500),
               itemCount: viewModel.items.length,
-              itemBuilder: (BuildContext ctx, int index) {
+              itemBuilder:
+                  (BuildContext ctx, int index, Animation<double> animation) {
                 Note note = viewModel.items[index];
-                return Hero(
-                  tag: 'filename${note.fileName}',
-                  child: Material(
-                    type: MaterialType.transparency,
-                    child: NoteListTile(
-                      note: note,
-                      onTap: () {
-                        _openNote(note);
-                      },
-                      onLongPress: () {
-                        _openNoteDeleteDialog(context, note);
-                      },
+                return FadeTransition(
+                  opacity: Tween<double>(
+                    begin: 0,
+                    end: 1,
+                  ).animate(animation),
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: Offset(0, -0.1),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: Hero(
+                      tag: 'filename${note.fileName}',
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: NoteListTile(
+                          note: note,
+                          onTap: () {
+                            _openNote(note);
+                          },
+                          onLongPress: () {
+                            _openNoteDeleteDialog(context, note);
+                          },
+                        ),
+                      ),
                     ),
                   ),
                 );

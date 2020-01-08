@@ -282,7 +282,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
       return;
     }
     if (_debounce?.isActive ?? false) _debounce.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () async {
+    _debounce = Timer(const Duration(milliseconds: 250), () async {
       _log.d('Saved automatically');
       await _saveNote();
     });

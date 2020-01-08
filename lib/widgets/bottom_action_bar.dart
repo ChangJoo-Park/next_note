@@ -13,12 +13,15 @@ class BottomStickyActionBar extends StatelessWidget {
     return Positioned(
       left: 0.0,
       bottom: 1.0,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-        decoration:
-            BoxDecoration(border: Border.all(width: 1.0), color: Colors.white),
-        width: MediaQuery.of(context).size.width,
-        child: Row(children: children),
+      child: Padding(
+        padding: const EdgeInsets.all(0.0),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+          decoration: BoxDecoration(
+              border: Border(top: BorderSide()), color: Colors.white),
+          width: MediaQuery.of(context).size.width,
+          child: Row(children: children),
+        ),
       ),
     );
   }

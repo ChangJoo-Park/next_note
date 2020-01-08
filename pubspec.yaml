@@ -1,6 +1,6 @@
 name: next_page
 description: A new Flutter markdown note application.
-version: 0.3.0+1
+version: 0.4.0+1
 environment:
     sdk: '>=2.3.0 <3.0.0'
 dependencies:
@@ -25,10 +25,17 @@ dependencies:
     flutter_markdown: ^0.3.2
     path_provider: ^1.5.1
     shared_preferences: ^0.5.6
+    unicorndial: "^1.1.5"
 
 dev_dependencies:
     flutter_test:
         sdk: flutter
+    flutter_native_splash: ^0.1.9
+    flutter_launcher_icons: "^0.7.3"
+    flutter_launcher_name: "^0.0.1"
+
+flutter_launcher_name:
+  name: "NextPage"
 
 flutter:
     uses-material-design: true

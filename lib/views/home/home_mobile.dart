@@ -105,6 +105,7 @@ class __HomeMobileState extends State<_HomeMobile> {
         child: SafeArea(
           child: RefreshIndicator(
             onRefresh: () {
+              viewModel.loadItems();
               return Future.value(true);
             },
             child: ListView.builder(
@@ -125,6 +126,33 @@ class __HomeMobileState extends State<_HomeMobile> {
                       ),
                       onTap: () {
                         _openNote(viewModel.items[index]);
+                      },
+                      onLongPress: () {
+                        _log.d('on long press');
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext ctx) {
+                            return AlertDialog(
+                              title: Text(viewModel.items[index].fileName),
+                              actions: <Widget>[
+                                FlatButton(
+                                  onPressed: () {
+                                    viewModel
+                                        .removeNote(viewModel.items[index]);
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('DELETE'),
+                                ),
+                                FlatButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('CLOSE'),
+                                )
+                              ],
+                            );
+                          },
+                        );
                       },
                     ),
                   ),

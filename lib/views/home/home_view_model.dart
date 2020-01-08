@@ -90,6 +90,17 @@ class HomeViewModel extends BaseViewModel {
   }
 
   loadItems() async {
+    _loadNotes();
+    notifyListeners();
+  }
+
+  removeNote(Note note) {
+    bool hasNote = _items.contains(note);
+    if (!hasNote) {
+      return;
+    }
+    _items.remove(note);
+    _noteStorage.removeFile(note.fileName);
     notifyListeners();
   }
 }

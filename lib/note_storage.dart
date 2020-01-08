@@ -44,4 +44,9 @@ class NoteStorage {
     final file = _localFile(filename);
     return file.writeAsString('$content');
   }
+
+  removeFile(String filename) {
+    final file = _localFile(filename);
+    return file.deleteSync();
+  }
 }

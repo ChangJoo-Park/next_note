@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:logger/logger.dart';
 import 'package:next_page/core/base/base_view_model.dart';
 import 'package:next_page/core/logger.dart';
@@ -23,5 +25,9 @@ class NoteDetailViewModel extends BaseViewModel {
     await _noteStorage.initializationDone;
     notifyListeners();
     initialized = true;
+  }
+
+  Future saveNote(Note note) async {
+    return await _noteStorage.writeFile(note.fileName, note.content);
   }
 }

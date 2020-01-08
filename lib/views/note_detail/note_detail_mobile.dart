@@ -17,8 +17,8 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile> {
   int _listener;
   final FocusNode noteFocusNode =
       FocusNode(debugLabel: 'NOTE_FOCUS_NODE', canRequestFocus: true);
-
   final TextEditingController noteController = TextEditingController();
+  Timer _debounce;
 
   __NoteDetailMobileState(this.viewModel);
 
@@ -34,6 +34,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile> {
 
   @override
   void dispose() {
+    _cancelDebounce();
     KeyboardVisibilityNotification().removeListener(_listener);
     super.dispose();
   }
@@ -42,136 +43,170 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomPadding: true,
-      body: Stack(
-        children: <Widget>[
-          SafeArea(
-            child: PageView(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        child: Hero(
-                          tag:
-                              'filename${widget.viewModel.currentNote.fileName}',
-                          child: Material(
-                            type: MaterialType.transparency,
-                            child: Text(
-                              widget.viewModel.currentNote.fileName,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
+      body: WillPopScope(
+        onWillPop: () async {
+          _cancelDebounce();
+          await _saveNote();
+          return Future.value(true);
+        },
+        child: Stack(
+          children: <Widget>[
+            SafeArea(
+              child: PageView(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.all(16.0),
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          child: Hero(
+                            tag:
+                                'filename${widget.viewModel.currentNote.fileName}',
+                            child: Material(
+                              type: MaterialType.transparency,
+                              child: Text(
+                                widget.viewModel.currentNote.fileName,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: Form(
-                          key: _formKey,
-                          child: TextField(
-                            controller: noteController,
-                            focusNode: noteFocusNode,
-                            cursorColor: Colors.black,
-                            style: TextStyle(fontFamily: 'Monospace'),
-                            decoration: InputDecoration(
-                              hintText: "Insert your message",
-                              border: InputBorder.none,
+                        Expanded(
+                          flex: 1,
+                          child: Form(
+                            key: _formKey,
+                            child: TextField(
+                              controller: noteController,
+                              focusNode: noteFocusNode,
+                              cursorColor: Colors.black,
+                              style: TextStyle(fontFamily: 'Monospace'),
+                              decoration: InputDecoration(
+                                hintText: "Insert your message",
+                                border: InputBorder.none,
+                              ),
+                              scrollPadding: EdgeInsets.all(20.0),
+                              keyboardType: TextInputType.multiline,
+                              maxLines: 99999,
+                              autofocus: false,
+                              onChanged: (String value) {
+                                _onNoteChanged();
+                              },
                             ),
-                            scrollPadding: EdgeInsets.all(20.0),
-                            keyboardType: TextInputType.multiline,
-                            maxLines: 99999,
-                            autofocus: false,
                           ),
                         ),
+                      ],
+                    ),
+                  ),
+                  Markdown(data: noteController.text),
+                ],
+              ),
+            ),
+            // Keyboard
+            _keyboardVisible
+                ? BottomStickyActionBar(
+                    children: <Widget>[
+                      BottomStickyActionItem(
+                        child: Icon(
+                          FontAwesomeIcons.bold,
+                          size: 16,
+                        ),
+                        callback: () => addCharacterAndMoveCaret(
+                          character: '****',
+                          offset: 2,
+                        ),
+                      ),
+                      BottomStickyActionItem(
+                        child: Icon(
+                          FontAwesomeIcons.italic,
+                          size: 16,
+                        ),
+                        callback: () => addCharacterAndMoveCaret(
+                          character: '**',
+                          offset: 1,
+                        ),
+                      ),
+                      BottomStickyActionItem(
+                        child: Icon(
+                          FontAwesomeIcons.strikethrough,
+                          size: 16,
+                        ),
+                        callback: () => addCharacterAndMoveCaret(
+                          character: '~~',
+                          offset: 1,
+                        ),
+                      ),
+                      BottomStickyActionItem(
+                        child: Icon(
+                          FontAwesomeIcons.quoteLeft,
+                          size: 16,
+                        ),
+                        callback: () => addCharacterAndMoveCaret(
+                          character: '> ',
+                        ),
+                      ),
+                      BottomStickyActionItem(
+                        child: Icon(
+                          FontAwesomeIcons.hashtag,
+                          size: 16,
+                        ),
+                        callback: () =>
+                            addCharacterAndMoveCaret(character: '#'),
+                      ),
+                      BottomStickyActionItem(
+                        child: Icon(
+                          FontAwesomeIcons.listUl,
+                          size: 16,
+                        ),
+                        callback: () =>
+                            addCharacterAndMoveCaret(character: '- '),
+                      ),
+                      BottomStickyActionItem(
+                        child: Icon(
+                          FontAwesomeIcons.listOl,
+                          size: 16,
+                        ),
+                        callback: () =>
+                            addCharacterAndMoveCaret(character: '1. '),
+                      ),
+                      BottomStickyActionItem(
+                        child: Icon(
+                          FontAwesomeIcons.checkSquare,
+                          size: 16,
+                        ),
+                        callback: () =>
+                            addCharacterAndMoveCaret(character: '- [ ] '),
                       ),
                     ],
-                  ),
-                ),
-                Markdown(data: noteController.text),
-              ],
-            ),
-          ),
-          // Keyboard
-          _keyboardVisible
-              ? BottomStickyActionBar(
-                  children: <Widget>[
-                    BottomStickyActionItem(
-                      child: Icon(
-                        FontAwesomeIcons.bold,
-                        size: 16,
-                      ),
-                      callback: () => addCharacterAndMoveCaret(
-                        character: '****',
-                        offset: 2,
-                      ),
-                    ),
-                    BottomStickyActionItem(
-                      child: Icon(
-                        FontAwesomeIcons.italic,
-                        size: 16,
-                      ),
-                      callback: () => addCharacterAndMoveCaret(
-                        character: '**',
-                        offset: 1,
-                      ),
-                    ),
-                    BottomStickyActionItem(
-                      child: Icon(
-                        FontAwesomeIcons.strikethrough,
-                        size: 16,
-                      ),
-                      callback: () => addCharacterAndMoveCaret(
-                        character: '~~',
-                        offset: 1,
-                      ),
-                    ),
-                    BottomStickyActionItem(
-                      child: Icon(
-                        FontAwesomeIcons.quoteLeft,
-                        size: 16,
-                      ),
-                      callback: () => addCharacterAndMoveCaret(
-                        character: '> ',
-                      ),
-                    ),
-                    BottomStickyActionItem(
-                      child: Icon(
-                        FontAwesomeIcons.hashtag,
-                        size: 16,
-                      ),
-                      callback: () => addCharacterAndMoveCaret(character: '#'),
-                    ),
-                    BottomStickyActionItem(
-                      child: Icon(
-                        FontAwesomeIcons.listUl,
-                        size: 16,
-                      ),
-                      callback: () => addCharacterAndMoveCaret(character: '- '),
-                    ),
-                    BottomStickyActionItem(
-                      child: Icon(
-                        FontAwesomeIcons.listOl,
-                        size: 16,
-                      ),
-                      callback: () =>
-                          addCharacterAndMoveCaret(character: '1. '),
-                    ),
-                    BottomStickyActionItem(
-                      child: Icon(
-                        FontAwesomeIcons.checkSquare,
-                        size: 16,
-                      ),
-                      callback: () =>
-                          addCharacterAndMoveCaret(character: '- [ ] '),
-                    ),
-                  ],
-                )
-              : Container(),
-        ],
+                  )
+                : Container(),
+          ],
+        ),
       ),
     );
+  }
+
+  void _cancelDebounce() {
+    if (_debounce != null) {
+      _debounce.cancel();
+      _debounce = null;
+    }
+  }
+
+  void _onNoteChanged({String value}) {
+    if (viewModel.currentNote == null) {
+      return;
+    }
+    if (_debounce?.isActive ?? false) _debounce.cancel();
+    _debounce = Timer(const Duration(milliseconds: 1000), () async {
+      await _saveNote();
+    });
+  }
+
+  Future _saveNote() async {
+    viewModel.currentNote.content = noteController.text;
+    await viewModel.saveNote(viewModel.currentNote);
   }
 
   _onKeyboardVisibility(bool visible) {

@@ -31,43 +31,43 @@ class __HomeMobileState extends State<_HomeMobile> {
   void initState() {
     super.initState();
 
-    _listener = KeyboardVisibilityNotification().addNewListener(
-      onChange: _onKeyboardVisibility,
-    );
+    // _listener = KeyboardVisibilityNotification().addNewListener(
+    //   onChange: _onKeyboardVisibility,
+    // );
   }
 
   @override
   void dispose() {
-    if (_debounce != null) {
-      _debounce.cancel();
-      _debounce = null;
-    }
+    // if (_debounce != null) {
+    //   _debounce.cancel();
+    //   _debounce = null;
+    // }
 
-    KeyboardVisibilityNotification().removeListener(_listener);
+    // KeyboardVisibilityNotification().removeListener(_listener);
 
     super.dispose();
   }
 
-  _onKeyboardVisibility(bool visible) {
-    setState(() {
-      this._keyboardVisible = visible;
-    });
-    if (!this._keyboardVisible) {
-      _onNoteChanged();
-    }
-  }
+  // _onKeyboardVisibility(bool visible) {
+  //   setState(() {
+  //     this._keyboardVisible = visible;
+  //   });
+  //   if (!this._keyboardVisible) {
+  //     _onNoteChanged();
+  //   }
+  // }
 
-  void _onNoteChanged({String value}) {
-    if (viewModel.currentNote == null) {
-      return;
-    }
-    if (_debounce?.isActive ?? false) _debounce.cancel();
-    _debounce = Timer(const Duration(milliseconds: 1000), () async {
-      viewModel.currentNote.content = noteController.text;
-      await viewModel.updateNote(viewModel.currentNote);
-      _log.d('#onNoteChanged -> updated');
-    });
-  }
+  // void _onNoteChanged({String value}) {
+  //   if (viewModel.currentNote == null) {
+  //     return;
+  //   }
+  //   if (_debounce?.isActive ?? false) _debounce.cancel();
+  //   _debounce = Timer(const Duration(milliseconds: 1000), () async {
+  //     viewModel.currentNote.content = noteController.text;
+  //     await viewModel.updateNote(viewModel.currentNote);
+  //     _log.d('#onNoteChanged -> updated');
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -80,64 +80,21 @@ class __HomeMobileState extends State<_HomeMobile> {
       mini: true,
       child: Icon(Icons.train),
       onPressed: () {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('새 노트'),
-                content: Form(
-                  key: _newNoteFormKey,
-                  child: TextFormField(
-                    initialValue: '${_nowString()}.md',
-                    validator: (String value) {
-                      if (value.isEmpty) {
-                        return 'Please enter some text';
-                      }
-                      return null;
-                    },
-                    onSaved: (String value) {
-                      setState(() {
-                        _newNoteName = value;
-                      });
-                    },
-                  ),
-                ),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text('취소'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  FlatButton(
-                    child: Text('만들기'),
-                    onPressed: () {
-                      if (_newNoteFormKey.currentState.validate()) {
-                        _newNoteFormKey.currentState.save();
-                        viewModel.createNewNote(_newNoteName);
-                      }
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            });
+        openNewNoteModal(context);
       },
     )));
 
-    childButtons.add(UnicornButton(
+    childButtons.add(
+      UnicornButton(
         currentButton: FloatingActionButton(
-            heroTag: "airplane",
-            backgroundColor: Colors.greenAccent,
-            mini: true,
-            child: Icon(Icons.airplanemode_active))));
-
-    childButtons.add(UnicornButton(
-        currentButton: FloatingActionButton(
-            heroTag: "directions",
-            backgroundColor: Colors.blueAccent,
-            mini: true,
-            child: Icon(Icons.directions_car))));
+          heroTag: "airplane",
+          backgroundColor: Colors.greenAccent,
+          mini: true,
+          child: Icon(FontAwesomeIcons.file),
+          onPressed: () {},
+        ),
+      ),
+    );
 
     return Scaffold(
       resizeToAvoidBottomPadding: true,
@@ -188,11 +145,53 @@ class __HomeMobileState extends State<_HomeMobile> {
     );
   }
 
+  void openNewNoteModal(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('새 노트'),
+            content: Form(
+              key: _newNoteFormKey,
+              child: TextFormField(
+                initialValue: '${_nowString()}.md',
+                validator: (String value) {
+                  if (value.isEmpty) {
+                    return 'Please enter some text';
+                  }
+                  return null;
+                },
+                onSaved: (String value) {
+                  setState(() {
+                    _newNoteName = value;
+                  });
+                },
+              ),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('취소'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              FlatButton(
+                child: Text('만들기'),
+                onPressed: () {
+                  if (_newNoteFormKey.currentState.validate()) {
+                    _newNoteFormKey.currentState.save();
+                    viewModel.createNewNote(_newNoteName);
+                  }
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
   void _openNote(Note note) {
     viewModel.currentNote = note;
-    _log.d('current note');
-    _log.d(viewModel.currentNote.content);
-    _log.d(viewModel.currentNote.filePath);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) => NoteDetailView(

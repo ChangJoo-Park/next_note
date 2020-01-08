@@ -242,23 +242,20 @@ class __HomeMobileState extends State<_HomeMobile> {
       actions: <Widget>[
         IconButton(
           icon: Icon(FontAwesomeIcons.cog),
-          onPressed: () {},
+          onPressed: () {
+            _openSettingView();
+          },
         )
       ],
     );
   }
 
-  void _createNewNote() async {
-    // titleController.text = '';
-    // noteController.text = '';
-    // await viewModel.createNewItem();
-    // _setCurrentItemToController();
-    // noteFocusNode.requestFocus();
-  }
-
-  void _setCurrentItemToController() {
-    // titleController.text = viewModel.currentItem.title;
-    // noteController.text = viewModel.currentItem.note;
+  void _openSettingView() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) => SettingView(),
+      ),
+    );
   }
 
   String _nowString() {

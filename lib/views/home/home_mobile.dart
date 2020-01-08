@@ -67,30 +67,33 @@ class __HomeMobileState extends State<_HomeMobile> {
 
   @override
   Widget build(BuildContext context) {
-    var childButtons = List<UnicornButton>();
+    // var childButtons = List<UnicornButton>();
 
-    childButtons.add(UnicornButton(
-        currentButton: FloatingActionButton(
-      heroTag: "train",
-      backgroundColor: Colors.redAccent,
-      mini: true,
-      child: Icon(Icons.train),
-      onPressed: () {
-        openNewNoteModal(context);
-      },
-    )));
+    // childButtons.add(
+    //   UnicornButton(
+    //     currentButton: FloatingActionButton(
+    //       heroTag: "new-note",
+    //       backgroundColor: Colors.redAccent,
+    //       mini: true,
+    //       child: Icon(FontAwesomeIcons.plus),
+    //       onPressed: () {
+    //         openNewNoteModal(context);
+    //       },
+    //     ),
+    //   ),
+    // );
 
-    childButtons.add(
-      UnicornButton(
-        currentButton: FloatingActionButton(
-          heroTag: "airplane",
-          backgroundColor: Colors.greenAccent,
-          mini: true,
-          child: Icon(FontAwesomeIcons.file),
-          onPressed: () {},
-        ),
-      ),
-    );
+    // childButtons.add(
+    //   UnicornButton(
+    //     currentButton: FloatingActionButton(
+    //       heroTag: "airplane",
+    //       backgroundColor: Colors.greenAccent,
+    //       mini: true,
+    //       child: Icon(FontAwesomeIcons.file),
+    //       onPressed: () {},
+    //     ),
+    //   ),
+    // );
 
     return Scaffold(
       resizeToAvoidBottomPadding: true,
@@ -131,17 +134,24 @@ class __HomeMobileState extends State<_HomeMobile> {
           ),
         ),
       ),
-      floatingActionButton: UnicornDialer(
-        backgroundColor: Colors.transparent,
-        parentButtonBackground: Colors.black,
-        orientation: UnicornOrientation.VERTICAL,
-        parentButton: Icon(Icons.menu),
-        childButtons: childButtons,
+      // floatingActionButton: UnicornDialer(
+      //   backgroundColor: Colors.transparent,
+      //   parentButtonBackground: Colors.black,
+      //   orientation: UnicornOrientation.VERTICAL,
+      //   parentButton: Icon(Icons.menu),
+      //   childButtons: childButtons,
+      // ),
+      floatingActionButton: FloatingActionButton.extended(
+        label: Text('새 노트'),
+        icon: Icon(Icons.add),
+        onPressed: () {
+          _openNewNoteModal(context);
+        },
       ),
     );
   }
 
-  void openNewNoteModal(BuildContext context) {
+  void _openNewNoteModal(BuildContext context) {
     showDialog(
         context: context,
         builder: (BuildContext context) {

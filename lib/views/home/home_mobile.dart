@@ -115,10 +115,10 @@ class __HomeMobileState extends State<_HomeMobile> {
               showItemInterval: Duration(milliseconds: 200),
               // Animation duration
               showItemDuration: Duration(milliseconds: 500),
-              itemCount: viewModel.items.length,
+              itemCount: viewModel.sortByUpdatedItems.length,
               itemBuilder:
                   (BuildContext ctx, int index, Animation<double> animation) {
-                Note note = viewModel.items[index];
+                Note note = viewModel.sortByUpdatedItems[index];
                 return FadeTransition(
                   opacity: Tween<double>(
                     begin: 0,
@@ -241,12 +241,18 @@ class __HomeMobileState extends State<_HomeMobile> {
 
   void _openNote(Note note) {
     viewModel.currentNote = note;
-    Navigator.of(context).push(
+    Navigator.of(context)
+        .push(
       MaterialPageRoute(
         builder: (BuildContext context) => NoteDetailView(
           note: viewModel.currentNote,
         ),
       ),
+    )
+        .then(
+      (value) {
+        viewModel.loadItems();
+      },
     );
   }
 

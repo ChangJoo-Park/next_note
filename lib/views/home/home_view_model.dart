@@ -71,6 +71,12 @@ class HomeViewModel extends BaseViewModel {
   }
 
   List<Note> get items => this._items;
+  List<Note> get sortByUpdatedItems {
+    List<Note> targetList = List.from(this._items);
+    targetList.sort((Note a, Note b) => b.modified.compareTo(a.modified));
+    return targetList;
+  }
+
   set items(List<Note> value) {
     this._items = value;
     notifyListeners();

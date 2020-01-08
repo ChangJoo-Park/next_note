@@ -10,7 +10,6 @@ class _HomeMobile extends StatefulWidget {
 
 class __HomeMobileState extends State<_HomeMobile> {
   Logger _log = getLogger('_HomeMobileState');
-  final _formKey = GlobalKey<FormState>();
   final _newNoteFormKey = GlobalKey<FormState>();
   final FocusNode titleFocusNode =
       FocusNode(debugLabel: 'TITLE_FOCUS_NODE', canRequestFocus: true);
@@ -21,9 +20,6 @@ class __HomeMobileState extends State<_HomeMobile> {
 
   String _newNoteName = '';
   bool _keyboardVisible = false;
-  bool _fileOpening = false;
-  Timer _debounce;
-  int _listener;
   HomeViewModel viewModel;
   __HomeMobileState({this.viewModel});
 

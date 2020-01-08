@@ -238,7 +238,7 @@ class __HomeMobileState extends State<_HomeMobile> {
   AppBar buildAppBar() {
     return AppBar(
       elevation: 0,
-      title: Text('NextNote'),
+      title: Text('NextPage'),
       actions: <Widget>[
         IconButton(
           icon: Icon(FontAwesomeIcons.cog),

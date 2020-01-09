@@ -342,9 +342,6 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
   }
 
   Future _saveNote() async {
-    _log.d('#saveNote');
-    _log.d('#saveNote -> ${noteController.text}');
-    _log.d('#saveNote -> ${viewModel.currentNote.content}');
     viewModel.currentNote.content = noteController.text;
 
     await viewModel.saveNote(viewModel.currentNote);

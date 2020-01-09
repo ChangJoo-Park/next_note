@@ -148,59 +148,6 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
     );
   }
 
-  Positioned _buildLeftActions() {
-    return Positioned(
-      top: 4.0,
-      left: 3.0,
-      child: Row(
-        children: <Widget>[
-          IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () async {
-              Navigator.of(context).pop();
-            },
-          )
-        ],
-      ),
-    );
-  }
-
-  Positioned _buildRightActions() {
-    return Positioned(
-      top: 4.0,
-      right: 3.0,
-      child: Hero(
-        tag: 'app-icon',
-        child: Material(
-          type: MaterialType.transparency,
-          child: Row(
-            children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.share),
-                onPressed: () {
-                  Share.share(noteController.text);
-                },
-              ),
-              IconButton(
-                icon: Icon(FontAwesomeIcons.markdown),
-                onPressed: () async {
-                  _cancelDebounce();
-                  await _saveNote();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          MarkdownView(noteController.text),
-                    ),
-                  );
-                },
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildSavedAt() {
     if (_keyboardVisible) {
       return Container();
@@ -246,7 +193,6 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
               autofocus: false,
               onChanged: (String value) {
                 _onNoteChanged();
-                _log.d(noteController.selection.textBefore('\n'));
                 // try {
                 //   TextSelection selection = noteController.selection;
                 //   // 현재 선택된 라인을 찾는다.
@@ -431,7 +377,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
                 selectionEnd: selection.end,
                 character: _dateTimeFormatString(
                   date: value,
-                  format: [HH, ':', nn, ' '],
+                  format: [yyyy, '-', mm, '-', dd],
                 ),
               );
             });

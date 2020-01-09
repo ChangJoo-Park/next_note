@@ -56,6 +56,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
         break;
       case AppLifecycleState.resumed:
         _log.d('AppLifecycleState.resumed');
+        noteController.text = viewModel.currentNote.content;
         break;
       case AppLifecycleState.inactive:
         _log.d('AppLifecycleState.inactive');

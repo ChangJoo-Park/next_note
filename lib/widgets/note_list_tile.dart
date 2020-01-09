@@ -1,3 +1,4 @@
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:next_page/models/note.dart';
 
@@ -30,7 +31,9 @@ class NoteListTile extends StatelessWidget {
         child: Material(
           type: MaterialType.transparency,
           child: Text(
-            note.modified.toString(),
+            formatDate(
+                    note.changed, [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn]) +
+                ' 저장함 ',
           ),
         ),
       ),

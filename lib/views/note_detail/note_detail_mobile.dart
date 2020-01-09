@@ -118,7 +118,6 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
                                   nn
                                 ]) +
                                 ' 저장함 ',
-                            style: TextStyle(fontFamily: 'Monospace'),
                           ),
                         ),
                       ),

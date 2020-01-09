@@ -9,6 +9,7 @@ class _MarkdownMobile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: Text('Viewer'),
       ),
       body: SafeArea(child: Markdown(data: viewModel.content)),

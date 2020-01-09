@@ -153,6 +153,8 @@ class __HomeMobileState extends State<_HomeMobile> {
       //   childButtons: childButtons,
       // ),
       floatingActionButton: FloatingActionButton.extended(
+        isExtended: true,
+        elevation: 0,
         heroTag: 'fab',
         label: Text('새 노트'),
         icon: Icon(Icons.add),

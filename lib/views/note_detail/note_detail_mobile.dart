@@ -107,9 +107,12 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
       resizeToAvoidBottomPadding: true,
       floatingActionButton: _keyboardVisible
           ? Container()
-          : FloatingActionButton(
+          : FloatingActionButton.extended(
+              isExtended: true,
+              elevation: 0,
               heroTag: 'fab',
-              child: Icon(Icons.save),
+              icon: Icon(Icons.save),
+              label: Text('저장'),
               onPressed: () async {
                 await _saveNote();
               },

@@ -256,18 +256,7 @@ class __HomeMobileState extends State<_HomeMobile> {
       elevation: 0,
       title: Text('NextPage'),
       actions: <Widget>[
-        Hero(
-          tag: 'app-icon',
-          child: Material(
-            type: MaterialType.transparency,
-            child: IconButton(
-              icon: Icon(FontAwesomeIcons.cog),
-              onPressed: () {
-                _openSettingView();
-              },
-            ),
-          ),
-        )
+        _simplePopup(),
       ],
     );
   }
@@ -286,4 +275,50 @@ class __HomeMobileState extends State<_HomeMobile> {
     String nowString = formatDate(now, format);
     return nowString;
   }
+
+  Widget _simplePopup() {
+    return PopupMenuButton<int>(
+      onSelected: (int selected) {
+        switch (selected) {
+          case 0:
+            _openSettingView();
+            break;
+          case 1:
+            break;
+          default:
+            break;
+        }
+      },
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 0,
+          child: Text(optionItemLabel(OptionItem.SETTING)),
+        ),
+        PopupMenuItem(
+          value: 1,
+          child: Text(optionItemLabel(OptionItem.ABOUT)),
+        ),
+      ],
+    );
+  }
+}
+
+enum OptionItem {
+  SETTING,
+  ABOUT,
+}
+
+String optionItemLabel(OptionItem option) {
+  String label = '';
+  switch (option) {
+    case OptionItem.SETTING:
+      label = 'Settings';
+      break;
+    case OptionItem.ABOUT:
+      label = 'About';
+      break;
+    default:
+      break;
+  }
+  return label;
 }

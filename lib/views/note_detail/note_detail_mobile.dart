@@ -27,6 +27,8 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
   @override
   initState() {
     super.initState();
+    timeago.setLocaleMessages('ko', timeago.KoMessages());
+
     WidgetsBinding.instance.addObserver(this);
     noteController.text = viewModel.currentNote.content;
     _listener = KeyboardVisibilityNotification().addNewListener(
@@ -74,6 +76,14 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomPadding: true,
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'fab',
+        child: Icon(Icons.save),
+        onPressed: () async {
+          await _saveNote();
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: WillPopScope(
         onWillPop: () async {
           _cancelDebounce();
@@ -87,6 +97,32 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
               child: PageView(
                 children: <Widget>[
                   Stack(children: [
+                    Positioned(
+                      bottom: 8.0,
+                      left: 8.0,
+                      child: Hero(
+                        tag:
+                            'note-subtitle-${widget.viewModel.currentNote.fileName}',
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: Text(
+                            formatDate(viewModel.currentNote.changed, [
+                                  yyyy,
+                                  '-',
+                                  mm,
+                                  '-',
+                                  dd,
+                                  ' ',
+                                  HH,
+                                  ':',
+                                  nn
+                                ]) +
+                                ' 저장함 ',
+                            style: TextStyle(fontFamily: 'Monospace'),
+                          ),
+                        ),
+                      ),
+                    ),
                     Positioned(
                       top: 4.0,
                       right: 4.0,
@@ -143,6 +179,9 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
               onChanged: (String value) {
                 _onNoteChanged();
               },
+              onEditingComplete: () {
+                _log.d('onEditingComplete');
+              },
             ),
           ),
         ),
@@ -153,7 +192,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
   Container _buildFileName() {
     return Container(
       child: Hero(
-        tag: 'filename${widget.viewModel.currentNote.fileName}',
+        tag: 'note-title-${widget.viewModel.currentNote.fileName}',
         child: Material(
           type: MaterialType.transparency,
           child: Container(
@@ -295,7 +334,11 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
   }
 
   Future _saveNote() async {
+    _log.d('#saveNote');
+    _log.d('#saveNote -> ${noteController.text}');
+    _log.d('#saveNote -> ${viewModel.currentNote.content}');
     viewModel.currentNote.content = noteController.text;
+
     await viewModel.saveNote(viewModel.currentNote);
   }
 

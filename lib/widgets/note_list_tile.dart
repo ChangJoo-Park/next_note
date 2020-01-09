@@ -15,11 +15,25 @@ class NoteListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(
-        note.fileName,
-        style: TextStyle(fontWeight: FontWeight.bold),
+      title: Hero(
+        tag: 'note-title-${note.fileName}',
+        child: Material(
+          type: MaterialType.transparency,
+          child: Text(
+            note.fileName,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
       ),
-      subtitle: Text(note.modified.toString()),
+      subtitle: Hero(
+        tag: 'note-subtitle-${note.fileName}',
+        child: Material(
+          type: MaterialType.transparency,
+          child: Text(
+            note.modified.toString(),
+          ),
+        ),
+      ),
       onTap: onTap,
       onLongPress: onLongPress,
     );

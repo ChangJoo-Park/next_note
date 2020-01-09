@@ -28,6 +28,12 @@ class NoteDetailViewModel extends BaseViewModel {
   }
 
   Future saveNote(Note note) async {
-    return await _noteStorage.writeFile(note.fileName, note.content);
+    File file = await _noteStorage.writeFile(note.fileName, note.content);
+    FileStat stat = file.statSync();
+    _currentNote.modified = stat.modified;
+    _currentNote.accessed = stat.accessed;
+    _currentNote.changed = stat.changed;
+    notifyListeners();
+    return file;
   }
 }

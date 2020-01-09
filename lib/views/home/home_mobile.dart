@@ -110,11 +110,11 @@ class __HomeMobileState extends State<_HomeMobile> {
             },
             child: AutoAnimatedList(
               // Start animation after (default zero)
-              delay: Duration(milliseconds: 500),
+              delay: Duration(milliseconds: 300),
               // Show each item through
-              showItemInterval: Duration(milliseconds: 200),
+              showItemInterval: Duration(milliseconds: 100),
               // Animation duration
-              showItemDuration: Duration(milliseconds: 500),
+              showItemDuration: Duration(milliseconds: 300),
               itemCount: viewModel.sortByUpdatedItems.length,
               itemBuilder:
                   (BuildContext ctx, int index, Animation<double> animation) {
@@ -129,20 +129,14 @@ class __HomeMobileState extends State<_HomeMobile> {
                       begin: Offset(0, -0.1),
                       end: Offset.zero,
                     ).animate(animation),
-                    child: Hero(
-                      tag: 'filename${note.fileName}',
-                      child: Material(
-                        type: MaterialType.transparency,
-                        child: NoteListTile(
-                          note: note,
-                          onTap: () {
-                            _openNote(note);
-                          },
-                          onLongPress: () {
-                            _openNoteDeleteDialog(context, note);
-                          },
-                        ),
-                      ),
+                    child: NoteListTile(
+                      note: note,
+                      onTap: () {
+                        _openNote(note);
+                      },
+                      onLongPress: () {
+                        _openNoteDeleteDialog(context, note);
+                      },
                     ),
                   ),
                 );
@@ -159,6 +153,7 @@ class __HomeMobileState extends State<_HomeMobile> {
       //   childButtons: childButtons,
       // ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'fab',
         label: Text('새 노트'),
         icon: Icon(Icons.add),
         onPressed: () {
@@ -281,7 +276,7 @@ class __HomeMobileState extends State<_HomeMobile> {
 
   String _nowString() {
     DateTime now = DateTime.now();
-    List<String> format = [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn, ' ', am];
+    List<String> format = [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn];
     String nowString = formatDate(now, format);
     return nowString;
   }

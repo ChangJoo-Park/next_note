@@ -100,47 +100,8 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
               child: PageView(
                 children: <Widget>[
                   Stack(children: [
-                    Positioned(
-                      bottom: 8.0,
-                      left: 8.0,
-                      child: Hero(
-                        tag:
-                            'note-subtitle-${widget.viewModel.currentNote.fileName}',
-                        child: Material(
-                          type: MaterialType.transparency,
-                          child: Text(
-                            formatDate(viewModel.currentNote.changed, [
-                                  yyyy,
-                                  '-',
-                                  mm,
-                                  '-',
-                                  dd,
-                                  ' ',
-                                  HH,
-                                  ':',
-                                  nn
-                                ]) +
-                                ' 저장함 ',
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 4.0,
-                      right: 2.0,
-                      child: Hero(
-                        tag: 'app-icon',
-                        child: Material(
-                          type: MaterialType.transparency,
-                          child: IconButton(
-                            icon: Icon(Icons.share),
-                            onPressed: () {
-                              Share.share(noteController.text);
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
+                    _buildSavedAt(),
+                    _buildShareIcon(),
                     Container(
                       padding: EdgeInsets.all(16.0),
                       child: Column(
@@ -157,6 +118,43 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
             ),
             _buildBottomStickyActionBar(),
           ],
+        ),
+      ),
+    );
+  }
+
+  Positioned _buildShareIcon() {
+    return Positioned(
+      top: 4.0,
+      right: 2.0,
+      child: Hero(
+        tag: 'app-icon',
+        child: Material(
+          type: MaterialType.transparency,
+          child: IconButton(
+            icon: Icon(Icons.share),
+            onPressed: () {
+              Share.share(noteController.text);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Positioned _buildSavedAt() {
+    return Positioned(
+      bottom: 8.0,
+      left: 8.0,
+      child: Hero(
+        tag: 'note-subtitle-${widget.viewModel.currentNote.fileName}',
+        child: Material(
+          type: MaterialType.transparency,
+          child: Text(
+            formatDate(viewModel.currentNote.changed,
+                    [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn]) +
+                ' 저장함 ',
+          ),
         ),
       ),
     );
@@ -186,6 +184,53 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
               autofocus: false,
               onChanged: (String value) {
                 _onNoteChanged();
+                _log.d(noteController.selection.textBefore('\n'));
+                // try {
+                //   TextSelection selection = noteController.selection;
+                //   // 현재 선택된 라인을 찾는다.
+                //   List<String> splitted = noteController.text.split('\n');
+                //   List<int> charsList = List.filled(splitted.length, 0);
+                //   splitted.asMap().forEach((int index, String value) {
+                //     int previous = 0;
+                //     int current = value.length;
+                //     if (index != 0) {
+                //       previous = charsList[index - 1];
+                //     }
+                //     charsList[index] = previous + current;
+                //   });
+                //   int lastMinIndex = 0;
+                //   bool eol = false;
+                //   _log.d('start');
+                //   for (var i = 0; i < charsList.length; i++) {
+                //     _log.d(charsList[i].toString());
+                //     if (charsList[i] <= selection.start) {
+                //       eol = charsList[i] == selection.start - 1;
+                //       lastMinIndex = i;
+                //     } else {
+                //       _log.d("break");
+                //       break;
+                //     }
+                //   }
+                //   _log.d('end');
+                //   _log.d('selection -> ${selection.start}');
+                //   _log.d('lastMinIndex -> $lastMinIndex');
+                //   _log.d('eol -> $eol');
+                //   int previousLine = lastMinIndex - 1;
+                //   if (previousLine < 0) {
+                //     previousLine = 0;
+                //   }
+
+                //   if (eol) {
+                //     _log.d('eol');
+                //   }
+                // bool startWithDash = splitted[previousLine].startsWith('- ');
+                // if (startWithDash) {
+                //   addCharacterAndMoveCaret(character: '- ');
+                // }
+                // } catch (e) {
+                //   print(e);
+                //   _log.e(e);
+                // }
               },
               onEditingComplete: () {
                 _log.d('onEditingComplete');
@@ -203,16 +248,19 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
         tag: 'note-title-${widget.viewModel.currentNote.fileName}',
         child: Material(
           type: MaterialType.transparency,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              color: Colors.grey,
-            ),
-            child: Text(
-              widget.viewModel.currentNote.fileName,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
+          child: GestureDetector(
+            onLongPress: () {},
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(4)),
+                color: Colors.grey,
+              ),
+              child: Text(
+                widget.viewModel.currentNote.fileName,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -369,7 +417,6 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
   }
 
   void _onNoteChanged({String value}) {
-    _log.d('_onNoteChanged');
     if (viewModel.currentNote == null) {
       return;
     }

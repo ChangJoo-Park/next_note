@@ -76,13 +76,15 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomPadding: true,
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'fab',
-        child: Icon(Icons.save),
-        onPressed: () async {
-          await _saveNote();
-        },
-      ),
+      floatingActionButton: _keyboardVisible
+          ? Container()
+          : FloatingActionButton(
+              heroTag: 'fab',
+              child: Icon(Icons.save),
+              onPressed: () async {
+                await _saveNote();
+              },
+            ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: WillPopScope(
         onWillPop: () async {

@@ -76,6 +76,32 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        title: _buildFileName(),
+        centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.share),
+            onPressed: () {
+              Share.share(noteController.text);
+            },
+          ),
+          IconButton(
+            icon: Icon(FontAwesomeIcons.markdown),
+            onPressed: () async {
+              _cancelDebounce();
+              await _saveNote();
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) =>
+                      MarkdownView(noteController.text),
+                ),
+              );
+            },
+          )
+        ],
+      ),
       resizeToAvoidBottomPadding: true,
       floatingActionButton: _keyboardVisible
           ? Container()
@@ -101,18 +127,15 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
                 children: <Widget>[
                   Stack(children: [
                     _buildSavedAt(),
-                    _buildShareIcon(),
                     Container(
                       padding: EdgeInsets.all(16.0),
                       child: Column(
                         children: <Widget>[
-                          _buildFileName(),
                           _buildTextFieldWidget(),
                         ],
                       ),
                     ),
                   ]),
-                  // Markdown(data: noteController.text),
                 ],
               ),
             ),
@@ -123,10 +146,27 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
     );
   }
 
-  Positioned _buildShareIcon() {
+  Positioned _buildLeftActions() {
     return Positioned(
       top: 4.0,
-      right: 2.0,
+      left: 3.0,
+      child: Row(
+        children: <Widget>[
+          IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () async {
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  Positioned _buildRightActions() {
+    return Positioned(
+      top: 4.0,
+      right: 3.0,
       child: Hero(
         tag: 'app-icon',
         child: Material(

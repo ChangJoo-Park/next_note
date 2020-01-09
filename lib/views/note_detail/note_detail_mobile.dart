@@ -185,7 +185,6 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
               controller: noteController,
               focusNode: noteFocusNode,
               cursorColor: Colors.black,
-              style: TextStyle(fontFamily: 'Monospace'),
               decoration: InputDecoration(
                 hintText: "Insert your message",
                 border: InputBorder.none,

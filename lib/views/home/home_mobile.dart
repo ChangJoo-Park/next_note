@@ -145,13 +145,6 @@ class __HomeMobileState extends State<_HomeMobile> {
           ),
         ),
       ),
-      // floatingActionButton: UnicornDialer(
-      //   backgroundColor: Colors.transparent,
-      //   parentButtonBackground: Colors.black,
-      //   orientation: UnicornOrientation.VERTICAL,
-      //   parentButton: Icon(Icons.menu),
-      //   childButtons: childButtons,
-      // ),
       floatingActionButton: FloatingActionButton.extended(
         isExtended: true,
         elevation: 0,

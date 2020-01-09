@@ -13,6 +13,7 @@ import 'package:next_page/models/note.dart';
 import 'package:next_page/views/note_detail/note_detail_view.dart';
 import 'package:next_page/views/setting/setting_view.dart';
 import 'package:next_page/widgets/note_list_tile.dart';
+import 'package:open_appstore/open_appstore.dart';
 import 'package:provider_architecture/provider_architecture.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 

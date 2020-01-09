@@ -279,6 +279,9 @@ class __HomeMobileState extends State<_HomeMobile> {
             _openSettingView();
             break;
           case 1:
+            _openAppStore();
+            break;
+          case 2:
             _openAboutDialog();
             break;
           default:
@@ -292,9 +295,21 @@ class __HomeMobileState extends State<_HomeMobile> {
         ),
         PopupMenuItem(
           value: 1,
+          child: Text(optionItemLabel(OptionItem.RATE_APP)),
+        ),
+        PopupMenuItem(
+          value: 2,
           child: Text(optionItemLabel(OptionItem.ABOUT)),
         ),
       ],
+    );
+  }
+
+  void _openAppStore() {
+    _log.d('message');
+    OpenAppstore.launch(
+      androidAppId: "com.facebook.katana&hl=ko",
+      iOSAppId: "284882215",
     );
   }
 
@@ -312,10 +327,7 @@ class __HomeMobileState extends State<_HomeMobile> {
   }
 }
 
-enum OptionItem {
-  SETTING,
-  ABOUT,
-}
+enum OptionItem { SETTING, ABOUT, RATE_APP }
 
 String optionItemLabel(OptionItem option) {
   String label = '';
@@ -325,6 +337,9 @@ String optionItemLabel(OptionItem option) {
       break;
     case OptionItem.ABOUT:
       label = 'About';
+      break;
+    case OptionItem.RATE_APP:
+      label = 'Rate App';
       break;
     default:
       break;

@@ -232,7 +232,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
             FontAwesomeIcons.bold,
             size: 16,
           ),
-          callback: () => addCharacterAndMoveCaret(
+          onTap: () => addCharacterAndMoveCaret(
             character: '****',
             offset: 2,
           ),
@@ -242,7 +242,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
             FontAwesomeIcons.italic,
             size: 16,
           ),
-          callback: () => addCharacterAndMoveCaret(
+          onTap: () => addCharacterAndMoveCaret(
             character: '**',
             offset: 1,
           ),
@@ -252,7 +252,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
             FontAwesomeIcons.strikethrough,
             size: 16,
           ),
-          callback: () => addCharacterAndMoveCaret(
+          onTap: () => addCharacterAndMoveCaret(
             character: '~~',
             offset: 1,
           ),
@@ -262,7 +262,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
             FontAwesomeIcons.quoteLeft,
             size: 16,
           ),
-          callback: () => addCharacterAndMoveCaret(
+          onTap: () => addCharacterAndMoveCaret(
             character: '> ',
           ),
         ),
@@ -271,52 +271,91 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
             FontAwesomeIcons.hashtag,
             size: 16,
           ),
-          callback: () => addCharacterAndMoveCaret(character: '#'),
+          onTap: () => addCharacterAndMoveCaret(character: '#'),
         ),
         BottomStickyActionItem(
           child: Icon(
             FontAwesomeIcons.listUl,
             size: 16,
           ),
-          callback: () => addCharacterAndMoveCaret(character: '- '),
+          onTap: () => addCharacterAndMoveCaret(character: '- '),
         ),
         BottomStickyActionItem(
           child: Icon(
             FontAwesomeIcons.listOl,
             size: 16,
           ),
-          callback: () => addCharacterAndMoveCaret(character: '1. '),
+          onTap: () => addCharacterAndMoveCaret(character: '1. '),
         ),
         BottomStickyActionItem(
           child: Icon(
             FontAwesomeIcons.checkSquare,
             size: 16,
           ),
-          callback: () => addCharacterAndMoveCaret(character: '- [ ] '),
+          onTap: () => addCharacterAndMoveCaret(character: '- [ ] '),
         ),
         BottomStickyActionItem(
           child: Icon(
             FontAwesomeIcons.calendarDay,
             size: 16,
           ),
-          callback: () => addCharacterAndMoveCaret(
+          onTap: () => addCharacterAndMoveCaret(
             character: _dateTimeFormatString(
               date: DateTime.now(),
               format: [yyyy, '-', mm, '-', dd],
             ),
           ),
+          onLongPress: () {
+            TextSelection selection = noteController.selection;
+            DateTime now = DateTime.now();
+            Duration twentyYears = Duration(days: 365 * 20);
+            showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: now.subtract(twentyYears),
+              lastDate: now.add(twentyYears),
+              initialDatePickerMode: DatePickerMode.day,
+            ).then((DateTime value) {
+              addCharacterAndMoveCaret(
+                selectionStart: selection.start,
+                selectionEnd: selection.end,
+                character: _dateTimeFormatString(
+                  date: value,
+                  format: [HH, ':', nn, ' '],
+                ),
+              );
+            });
+          },
         ),
         BottomStickyActionItem(
           child: Icon(
             FontAwesomeIcons.clock,
             size: 16,
           ),
-          callback: () => addCharacterAndMoveCaret(
+          onTap: () => addCharacterAndMoveCaret(
             character: _dateTimeFormatString(
               date: DateTime.now(),
-              format: [HH, ':', nn, ' ', am],
+              format: [HH, ':', nn, ' '],
             ),
           ),
+          onLongPress: () {
+            TextSelection selection = noteController.selection;
+            TimeOfDay nowTimeOfDay = TimeOfDay.now();
+            showTimePicker(context: context, initialTime: nowTimeOfDay)
+                .then((TimeOfDay value) {
+              DateTime nowDateTime = DateTime.now();
+              DateTime targetDateTime = DateTime(nowDateTime.year,
+                  nowDateTime.month, nowDateTime.day, value.hour, value.minute);
+              addCharacterAndMoveCaret(
+                selectionStart: selection.start,
+                selectionEnd: selection.end,
+                character: _dateTimeFormatString(
+                  date: targetDateTime,
+                  format: [HH, ':', nn, ' '],
+                ),
+              );
+            });
+          },
         ),
       ],
     );
@@ -355,9 +394,17 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
     _log.d('_onKeyboardVisibility -> $_keyboardVisible');
   }
 
-  void addCharacterAndMoveCaret({String character, int offset = 0}) {
-    int curSelectionStart = noteController.selection.start;
-    int curSelectionEnd = noteController.selection.end;
+  void addCharacterAndMoveCaret({
+    String character,
+    int offset = 0,
+    int selectionStart,
+    int selectionEnd,
+  }) {
+    int curSelectionStart = selectionStart != null
+        ? selectionStart
+        : noteController.selection.start;
+    int curSelectionEnd =
+        selectionEnd != null ? selectionEnd : noteController.selection.end;
     int curTextLength = noteController.text.length;
     String midText = '';
     int position = 0;

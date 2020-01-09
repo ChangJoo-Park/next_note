@@ -31,15 +31,18 @@ class BottomStickyActionBar extends StatelessWidget {
 }
 
 class BottomStickyActionItem extends StatelessWidget {
-  const BottomStickyActionItem({Key key, @required this.child, this.callback})
+  const BottomStickyActionItem(
+      {Key key, @required this.child, this.onTap, this.onLongPress})
       : super(key: key);
   final Widget child;
-  final VoidCallback callback;
+  final VoidCallback onTap;
+  final VoidCallback onLongPress;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: callback,
+      onTap: onTap,
+      onLongPress: onLongPress,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
         child: child,

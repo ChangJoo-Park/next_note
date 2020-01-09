@@ -27,7 +27,6 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
   @override
   initState() {
     super.initState();
-    timeago.setLocaleMessages('ko', timeago.KoMessages());
 
     WidgetsBinding.instance.addObserver(this);
     noteController.text = viewModel.currentNote.content;

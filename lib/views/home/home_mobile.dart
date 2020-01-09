@@ -279,6 +279,7 @@ class __HomeMobileState extends State<_HomeMobile> {
             _openSettingView();
             break;
           case 1:
+            _openAboutDialog();
             break;
           default:
             break;
@@ -294,6 +295,19 @@ class __HomeMobileState extends State<_HomeMobile> {
           child: Text(optionItemLabel(OptionItem.ABOUT)),
         ),
       ],
+    );
+  }
+
+  void _openAboutDialog() {
+    showAboutDialog(
+      context: context,
+      applicationIcon: Icon(FontAwesomeIcons.markdown),
+      applicationName: 'NextPage',
+      applicationVersion: '1.0.0',
+      children: [
+        Text('Thank you for use :)'),
+      ],
+      useRootNavigator: true,
     );
   }
 }

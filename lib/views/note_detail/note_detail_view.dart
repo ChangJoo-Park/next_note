@@ -15,7 +15,6 @@ import 'package:next_page/widgets/no_glow_scroll_behavior.dart';
 import 'package:provider_architecture/provider_architecture.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:share/share.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 import 'note_detail_view_model.dart';
 

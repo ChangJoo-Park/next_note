@@ -131,11 +131,28 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
         tag: 'app-icon',
         child: Material(
           type: MaterialType.transparency,
-          child: IconButton(
-            icon: Icon(Icons.share),
-            onPressed: () {
-              Share.share(noteController.text);
-            },
+          child: Row(
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.share),
+                onPressed: () {
+                  Share.share(noteController.text);
+                },
+              ),
+              IconButton(
+                icon: Icon(FontAwesomeIcons.markdown),
+                onPressed: () async {
+                  _cancelDebounce();
+                  await _saveNote();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          MarkdownView(noteController.text),
+                    ),
+                  );
+                },
+              )
+            ],
           ),
         ),
       ),

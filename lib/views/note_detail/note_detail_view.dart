@@ -9,6 +9,7 @@ import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:logger/logger.dart';
 import 'package:next_page/core/logger.dart';
 import 'package:next_page/models/note.dart';
+import 'package:next_page/views/markdown/markdown_view.dart';
 import 'package:next_page/widgets/bottom_action_bar.dart';
 import 'package:next_page/widgets/no_glow_scroll_behavior.dart';
 import 'package:provider_architecture/provider_architecture.dart';

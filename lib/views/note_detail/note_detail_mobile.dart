@@ -56,7 +56,9 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
         break;
       case AppLifecycleState.resumed:
         _log.d('AppLifecycleState.resumed');
-        noteController.text = viewModel.currentNote.content;
+        if (viewModel.currentNote != null) {
+          noteController.text = viewModel.currentNote.content;
+        }
         break;
       case AppLifecycleState.inactive:
         _log.d('AppLifecycleState.inactive');
@@ -199,7 +201,10 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
     );
   }
 
-  Positioned _buildSavedAt() {
+  Widget _buildSavedAt() {
+    if (_keyboardVisible) {
+      return Container();
+    }
     return Positioned(
       bottom: 8.0,
       left: 8.0,

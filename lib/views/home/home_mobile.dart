@@ -256,11 +256,17 @@ class __HomeMobileState extends State<_HomeMobile> {
       elevation: 0,
       title: Text('NextPage'),
       actions: <Widget>[
-        IconButton(
-          icon: Icon(FontAwesomeIcons.cog),
-          onPressed: () {
-            _openSettingView();
-          },
+        Hero(
+          tag: 'app-icon',
+          child: Material(
+            type: MaterialType.transparency,
+            child: IconButton(
+              icon: Icon(FontAwesomeIcons.cog),
+              onPressed: () {
+                _openSettingView();
+              },
+            ),
+          ),
         )
       ],
     );

@@ -125,12 +125,18 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
                     ),
                     Positioned(
                       top: 4.0,
-                      right: 4.0,
-                      child: IconButton(
-                        icon: Icon(Icons.share),
-                        onPressed: () {
-                          Share.share(noteController.text);
-                        },
+                      right: 2.0,
+                      child: Hero(
+                        tag: 'app-icon',
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: IconButton(
+                            icon: Icon(Icons.share),
+                            onPressed: () {
+                              Share.share(noteController.text);
+                            },
+                          ),
+                        ),
                       ),
                     ),
                     Container(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:next_page/widgets/no_glow_scroll_behavior.dart';
 
 class BottomStickyActionBar extends StatelessWidget {
   const BottomStickyActionBar({
@@ -10,17 +11,19 @@ class BottomStickyActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      left: 0.0,
-      bottom: 1.0,
-      child: Padding(
-        padding: const EdgeInsets.all(0.0),
+    return ScrollConfiguration(
+      behavior: NoGlowScrollBehavior(),
+      child: Positioned(
+        left: 0.0,
+        bottom: 1.0,
+        width: MediaQuery.of(context).size.width,
+        height: 40,
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
           decoration: BoxDecoration(
               border: Border(top: BorderSide()), color: Colors.white),
           width: MediaQuery.of(context).size.width,
-          child: Row(children: children),
+          child: ListView(scrollDirection: Axis.horizontal, children: children),
         ),
       ),
     );

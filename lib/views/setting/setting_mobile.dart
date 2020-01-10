@@ -90,18 +90,6 @@ class __SettingMobileState extends State<_SettingMobile> {
         child: Column(
           children: <Widget>[
             ListTile(
-              onTap: () async {
-                setState(() {
-                  fingerprint = !fingerprint;
-                });
-                if (fingerprint) {
-                  await _checkBiometrics();
-                  debugPrint('can local auth -> $_canCheckBiometrics');
-                  if (_canCheckBiometrics) {
-                    _authenticate();
-                  }
-                }
-              },
               title: Text('Use Fingerprint authentication'),
               trailing: Switch(
                 value: fingerprint,
@@ -133,7 +121,10 @@ class __SettingMobileState extends State<_SettingMobile> {
                 },
               ),
             ),
-            ListTile(),
+            ListTile(
+              title: Text('Select Theme'),
+              trailing: Text('Working in Progress'),
+            ),
           ],
         ),
       ),

@@ -17,6 +17,7 @@ class __SettingMobileState extends State<_SettingMobile> {
   List<BiometricType> _availableBiometrics;
   String _authorized = 'Not Authorized';
   bool _isAuthenticating = false;
+  bool _keyboardAction = false;
 
   Future<void> _checkBiometrics() async {
     bool canCheckBiometrics;
@@ -89,18 +90,6 @@ class __SettingMobileState extends State<_SettingMobile> {
         child: Column(
           children: <Widget>[
             ListTile(
-              onTap: () async {
-                setState(() {
-                  fingerprint = !fingerprint;
-                });
-                if (fingerprint) {
-                  await _checkBiometrics();
-                  debugPrint('can local auth -> $_canCheckBiometrics');
-                  if (_canCheckBiometrics) {
-                    _authenticate();
-                  }
-                }
-              },
               title: Text('Use Fingerprint authentication'),
               trailing: Switch(
                 value: fingerprint,
@@ -115,6 +104,26 @@ class __SettingMobileState extends State<_SettingMobile> {
                   }
                 },
               ),
+            ),
+            ListTile(
+              onTap: () async {
+                setState(() {
+                  _keyboardAction = !_keyboardAction;
+                });
+              },
+              title: Text('Use Keyboard action extension'),
+              trailing: Switch(
+                value: _keyboardAction,
+                onChanged: (bool value) async {
+                  setState(() {
+                    _keyboardAction = value;
+                  });
+                },
+              ),
+            ),
+            ListTile(
+              title: Text('Select Theme'),
+              trailing: Text('Working in Progress'),
             ),
           ],
         ),

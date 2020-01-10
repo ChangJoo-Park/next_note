@@ -23,10 +23,12 @@ class HomeViewModel extends BaseViewModel {
     await _noteStorage.initializationDone;
 
     prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('initialized')) {
-      _noteStorage.writeFile('getting-started.md',
-          await rootBundle.loadString('assets/notes/getting-started.md'));
-      // TODO: SET Initialized key true
+    if (!prefs.containsKey('initialized') || prefs.getBool('initialized')) {
+      await prefs.setBool('initialized', true);
+      _noteStorage.writeFile(
+        'getting-started.md',
+        await rootBundle.loadString('assets/notes/getting-started.md'),
+      );
     }
 
     _loadNotes();
@@ -73,7 +75,7 @@ class HomeViewModel extends BaseViewModel {
   List<Note> get items => this._items;
   List<Note> get sortByUpdatedItems {
     List<Note> targetList = List.from(this._items);
-    targetList.sort((Note a, Note b) => b.modified.compareTo(a.modified));
+    targetList.sort((Note a, Note b) => b.accessed.compareTo(a.accessed));
     return targetList;
   }
 

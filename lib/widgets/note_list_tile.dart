@@ -1,3 +1,4 @@
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:next_page/models/note.dart';
 
@@ -15,11 +16,27 @@ class NoteListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(
-        note.fileName,
-        style: TextStyle(fontWeight: FontWeight.bold),
+      title: Hero(
+        tag: 'note-title-${note.fileName}',
+        child: Material(
+          type: MaterialType.transparency,
+          child: Text(
+            note.fileName,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
       ),
-      subtitle: Text(note.modified.toString()),
+      subtitle: Hero(
+        tag: 'note-subtitle-${note.fileName}',
+        child: Material(
+          type: MaterialType.transparency,
+          child: Text(
+            formatDate(
+                    note.changed, [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn]) +
+                ' 저장함 ',
+          ),
+        ),
+      ),
       onTap: onTap,
       onLongPress: onLongPress,
     );

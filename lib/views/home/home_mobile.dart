@@ -110,11 +110,11 @@ class __HomeMobileState extends State<_HomeMobile> {
             },
             child: AutoAnimatedList(
               // Start animation after (default zero)
-              delay: Duration(milliseconds: 500),
+              delay: Duration(milliseconds: 300),
               // Show each item through
-              showItemInterval: Duration(milliseconds: 200),
+              showItemInterval: Duration(milliseconds: 100),
               // Animation duration
-              showItemDuration: Duration(milliseconds: 500),
+              showItemDuration: Duration(milliseconds: 300),
               itemCount: viewModel.sortByUpdatedItems.length,
               itemBuilder:
                   (BuildContext ctx, int index, Animation<double> animation) {
@@ -129,20 +129,14 @@ class __HomeMobileState extends State<_HomeMobile> {
                       begin: Offset(0, -0.1),
                       end: Offset.zero,
                     ).animate(animation),
-                    child: Hero(
-                      tag: 'filename${note.fileName}',
-                      child: Material(
-                        type: MaterialType.transparency,
-                        child: NoteListTile(
-                          note: note,
-                          onTap: () {
-                            _openNote(note);
-                          },
-                          onLongPress: () {
-                            _openNoteDeleteDialog(context, note);
-                          },
-                        ),
-                      ),
+                    child: NoteListTile(
+                      note: note,
+                      onTap: () {
+                        _openNote(note);
+                      },
+                      onLongPress: () {
+                        _openNoteDeleteDialog(context, note);
+                      },
                     ),
                   ),
                 );
@@ -151,14 +145,10 @@ class __HomeMobileState extends State<_HomeMobile> {
           ),
         ),
       ),
-      // floatingActionButton: UnicornDialer(
-      //   backgroundColor: Colors.transparent,
-      //   parentButtonBackground: Colors.black,
-      //   orientation: UnicornOrientation.VERTICAL,
-      //   parentButton: Icon(Icons.menu),
-      //   childButtons: childButtons,
-      // ),
       floatingActionButton: FloatingActionButton.extended(
+        isExtended: true,
+        elevation: 0,
+        heroTag: 'fab',
         label: Text('새 노트'),
         icon: Icon(Icons.add),
         onPressed: () {
@@ -261,12 +251,7 @@ class __HomeMobileState extends State<_HomeMobile> {
       elevation: 0,
       title: Text('NextPage'),
       actions: <Widget>[
-        IconButton(
-          icon: Icon(FontAwesomeIcons.cog),
-          onPressed: () {
-            _openSettingView();
-          },
-        )
+        _simplePopup(),
       ],
     );
   }
@@ -281,8 +266,83 @@ class __HomeMobileState extends State<_HomeMobile> {
 
   String _nowString() {
     DateTime now = DateTime.now();
-    List<String> format = [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn, ' ', am];
+    List<String> format = [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn];
     String nowString = formatDate(now, format);
     return nowString;
   }
+
+  Widget _simplePopup() {
+    return PopupMenuButton<int>(
+      onSelected: (int selected) {
+        switch (selected) {
+          case 0:
+            _openSettingView();
+            break;
+          case 1:
+            _openAppStore();
+            break;
+          case 2:
+            _openAboutDialog();
+            break;
+          default:
+            break;
+        }
+      },
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 0,
+          child: Text(optionItemLabel(OptionItem.SETTING)),
+        ),
+        PopupMenuItem(
+          value: 1,
+          child: Text(optionItemLabel(OptionItem.RATE_APP)),
+        ),
+        PopupMenuItem(
+          value: 2,
+          child: Text(optionItemLabel(OptionItem.ABOUT)),
+        ),
+      ],
+    );
+  }
+
+  void _openAppStore() {
+    _log.d('message');
+    OpenAppstore.launch(
+      androidAppId: "com.facebook.katana&hl=ko",
+      iOSAppId: "284882215",
+    );
+  }
+
+  void _openAboutDialog() {
+    showAboutDialog(
+      context: context,
+      applicationIcon: Icon(FontAwesomeIcons.markdown),
+      applicationName: 'NextPage',
+      applicationVersion: '1.0.0',
+      children: [
+        Text('Thank you for use :)'),
+      ],
+      useRootNavigator: true,
+    );
+  }
+}
+
+enum OptionItem { SETTING, ABOUT, RATE_APP }
+
+String optionItemLabel(OptionItem option) {
+  String label = '';
+  switch (option) {
+    case OptionItem.SETTING:
+      label = 'Settings';
+      break;
+    case OptionItem.ABOUT:
+      label = 'About';
+      break;
+    case OptionItem.RATE_APP:
+      label = 'Rate App';
+      break;
+    default:
+      break;
+  }
+  return label;
 }

@@ -23,7 +23,8 @@ class HomeViewModel extends BaseViewModel {
     await _noteStorage.initializationDone;
 
     prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('initialized') || prefs.getBool('initialized')) {
+    if (prefs.getBool('initialized')) {
+    } else {
       await prefs.setBool('initialized', true);
       _noteStorage.writeFile(
         'getting-started.md',

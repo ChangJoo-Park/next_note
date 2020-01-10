@@ -15,30 +15,23 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
   final Logger _log = getLogger('_NoteDetailMobile');
   bool _keyboardVisible = false;
   final _formKey = GlobalKey<FormState>();
-  int _listener;
   final FocusNode noteFocusNode =
       FocusNode(debugLabel: 'NOTE_FOCUS_NODE', canRequestFocus: true);
   final TextEditingController noteController = TextEditingController();
   Timer _debounce;
   AppLifecycleState _notification;
-
   __NoteDetailMobileState(this.viewModel);
 
   @override
   initState() {
-    super.initState();
-
     WidgetsBinding.instance.addObserver(this);
     noteController.text = viewModel.currentNote.content;
-    _listener = KeyboardVisibilityNotification().addNewListener(
-      onChange: _onKeyboardVisibility,
-    );
+    super.initState();
   }
 
   @override
   void dispose() {
     _cancelDebounce();
-    KeyboardVisibilityNotification().removeListener(_listener);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -76,6 +69,10 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
 
   @override
   Widget build(BuildContext context) {
+    setState(() {
+      _keyboardVisible = MediaQuery.of(context).viewInsets.vertical > 0;
+    });
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -126,20 +123,11 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
         },
         child: Stack(
           children: <Widget>[
-            SafeArea(
-              child: PageView(
+            Container(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
                 children: <Widget>[
-                  Stack(children: [
-                    _buildSavedAt(),
-                    Container(
-                      padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        children: <Widget>[
-                          _buildTextFieldWidget(),
-                        ],
-                      ),
-                    ),
-                  ]),
+                  _buildTextFieldWidget(),
                 ],
               ),
             ),
@@ -280,7 +268,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
 
   Widget _buildBottomStickyActionBar() {
     if (!_keyboardVisible) {
-      return Container();
+      return _buildSavedAt();
     }
     return BottomStickyActionBar(
       children: <Widget>[
@@ -443,7 +431,6 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
   }
 
   _onKeyboardVisibility(bool visible) {
-    _log.d('_onKeyboardVisibility');
     setState(() {
       this._keyboardVisible = visible;
     });

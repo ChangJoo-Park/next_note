@@ -184,15 +184,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.1"
-  keyboard_visibility:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "5368ee3dea27e5ec8b69f7b5a2c84f2ac716ac79"
-      url: "git@github.com:rafalbednarczuk/flutter_keyboard_visibility.git"
-    source: git
-    version: "0.5.6"
   local_auth:
     dependency: "direct main"
     description:

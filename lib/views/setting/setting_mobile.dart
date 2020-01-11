@@ -86,51 +86,40 @@ class __SettingMobileState extends State<_SettingMobile> {
         elevation: 0,
         title: Text('Setting'),
       ),
-      body: FutureBuilder(
-        future: viewModel.loadBaseSettings(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            return Container(
-              child: Column(
-                children: <Widget>[
-                  ListTile(
-                    title: Text('Use Fingerprint authentication'),
-                    trailing: Switch(
-                      value: viewModel.useAuthentication,
-                      onChanged: (bool value) async {
-                        viewModel.useAuthentication = value;
-                        if (value) {
-                          await _checkBiometrics();
-                          debugPrint('can local auth -> $_canCheckBiometrics');
-                          if (_canCheckBiometrics) {
-                            _authenticate();
-                          }
-                        }
-                      },
-                    ),
-                  ),
-                  ListTile(
-                    title: Text('Use Keyboard action extension'),
-                    trailing: Switch(
-                      value: viewModel.useKeyboardAction,
-                      onChanged: (bool value) async {
-                        viewModel.useKeyboardAction = value;
-                      },
-                    ),
-                  ),
-                  ListTile(
-                    title: Text('Select Theme'),
-                    trailing: Text('Working in Progress'),
-                  ),
-                ],
+      body: Container(
+        child: Column(
+          children: <Widget>[
+            ListTile(
+              title: Text('Use Fingerprint authentication'),
+              trailing: Switch(
+                value: viewModel.useAuthentication,
+                onChanged: (bool value) async {
+                  viewModel.useAuthentication = value;
+                  if (value) {
+                    await _checkBiometrics();
+                    debugPrint('can local auth -> $_canCheckBiometrics');
+                    if (_canCheckBiometrics) {
+                      _authenticate();
+                    }
+                  }
+                },
               ),
-            );
-          } else {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
+            ),
+            ListTile(
+              title: Text('Use Keyboard action extension'),
+              trailing: Switch(
+                value: viewModel.useKeyboardAction,
+                onChanged: (bool value) async {
+                  viewModel.useKeyboardAction = value;
+                },
+              ),
+            ),
+            ListTile(
+              title: Text('Select Theme'),
+              trailing: Text('Working in Progress'),
+            ),
+          ],
+        ),
       ),
     );
   }

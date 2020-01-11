@@ -11,7 +11,6 @@ class NoteDetailViewModel extends BaseViewModel {
 
   NoteStorage _noteStorage;
   Note _currentNote;
-  bool initialized = false;
 
   NoteDetailViewModel(Note note) {
     _currentNote = note;
@@ -20,11 +19,10 @@ class NoteDetailViewModel extends BaseViewModel {
   Note get currentNote => _currentNote;
 
   // Add ViewModel specific code here
-  initialize() async {
+  Future<bool> initialize() async {
     _noteStorage = NoteStorage();
     await _noteStorage.initializationDone;
-    notifyListeners();
-    initialized = true;
+    return Future.value(true);
   }
 
   Future saveNote(Note note) async {

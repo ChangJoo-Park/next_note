@@ -62,8 +62,6 @@ class BaseViewModel extends ChangeNotifier {
       await this.prefs.setBool('keyboard-action', true);
     }
     _useKeyboardAction = this.prefs.getBool('keyboard-action');
-    _log.d('_useAuthentication -> $_useAuthentication');
-    _log.d('_useKeyboardAction -> $_useKeyboardAction');
     return Future.value(true);
   }
 

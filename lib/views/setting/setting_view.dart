@@ -18,14 +18,24 @@ class SettingView extends StatelessWidget {
   Widget build(BuildContext context) {
     SettingViewModel viewModel = SettingViewModel();
     return ViewModelProvider<SettingViewModel>.withConsumer(
-        viewModel: viewModel,
-        onModelReady: (viewModel) {},
-        builder: (context, viewModel, child) {
-          return ScreenTypeLayout(
-            mobile: _SettingMobile(viewModel),
-            desktop: _SettingDesktop(viewModel),
-            tablet: _SettingTablet(viewModel),
-          );
-        });
+      viewModel: viewModel,
+      onModelReady: (viewModel) {},
+      builder: (context, viewModel, child) {
+        return FutureBuilder(
+          future: viewModel.loadBaseSettings(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData) {
+              return ScreenTypeLayout(
+                mobile: _SettingMobile(viewModel),
+                desktop: _SettingDesktop(viewModel),
+                tablet: _SettingTablet(viewModel),
+              );
+            } else {
+              return Container();
+            }
+          },
+        );
+      },
+    );
   }
 }

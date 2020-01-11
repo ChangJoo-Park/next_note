@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../logger.dart';
@@ -14,6 +15,8 @@ class BaseViewModel extends ChangeNotifier {
   // Settings
   bool _useAuthentication;
   bool _useKeyboardAction;
+  ThemeData _themeData;
+  String _theme;
 
   BaseViewModel({
     bool busy = false,
@@ -62,7 +65,25 @@ class BaseViewModel extends ChangeNotifier {
       await this.prefs.setBool('keyboard-action', true);
     }
     _useKeyboardAction = this.prefs.getBool('keyboard-action');
+
+    if (!this.prefs.containsKey('theme')) {
+      await this.prefs.setString('theme', 'light');
+    }
+    _theme = this.prefs.getString('theme');
     return Future.value(true);
+  }
+
+  get themeData => _themeData;
+  set themeData(ThemeData value) {
+    _themeData = value;
+    notifyListeners();
+  }
+
+  get theme => _theme;
+  set theme(String value) {
+    _theme = value;
+    notifyListeners();
+    prefs.setString('theme', value);
   }
 
   @override

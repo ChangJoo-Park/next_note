@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'package:next_page/core/base/base_view_model.dart';
 import 'package:next_page/core/logger.dart';
@@ -22,16 +21,6 @@ class HomeViewModel extends BaseViewModel {
     _noteStorage = NoteStorage();
 
     await _noteStorage.initializationDone;
-
-    prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool('initialized')) {
-    } else {
-      await prefs.setBool('initialized', true);
-      _noteStorage.writeFile(
-        'getting-started.md',
-        await rootBundle.loadString('assets/notes/getting-started.md'),
-      );
-    }
 
     _loadNotes();
 

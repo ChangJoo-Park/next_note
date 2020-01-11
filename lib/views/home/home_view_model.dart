@@ -20,6 +20,7 @@ class HomeViewModel extends BaseViewModel {
 
   initialize() async {
     _noteStorage = NoteStorage();
+
     await _noteStorage.initializationDone;
 
     prefs = await SharedPreferences.getInstance();

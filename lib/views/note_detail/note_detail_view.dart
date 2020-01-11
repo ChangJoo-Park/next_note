@@ -32,15 +32,29 @@ class NoteDetailView extends StatelessWidget {
       viewModel: viewModel,
       onModelReady: (viewModel) async {
         // Do something once your viewModel is initialized
-        await viewModel.initialize();
       },
       builder: (context, viewModel, child) {
-        return ScreenTypeLayout(
-          mobile: _NoteDetailMobile(viewModel),
-          desktop: _NoteDetailDesktop(viewModel),
-          tablet: _NoteDetailTablet(viewModel),
+        return FutureBuilder(
+          future: _initialize(viewModel),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData) {
+              return ScreenTypeLayout(
+                mobile: _NoteDetailMobile(viewModel),
+                desktop: _NoteDetailDesktop(viewModel),
+                tablet: _NoteDetailTablet(viewModel),
+              );
+            } else {
+              return Center(child: CircularProgressIndicator());
+            }
+          },
         );
       },
     );
+  }
+
+  _initialize(viewModel) async {
+    await viewModel.initialize();
+    await viewModel.loadBaseSettings();
+    return Future.value(true);
   }
 }

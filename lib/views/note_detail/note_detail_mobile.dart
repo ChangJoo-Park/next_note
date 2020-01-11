@@ -69,9 +69,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
 
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      _keyboardVisible = MediaQuery.of(context).viewInsets.vertical > 0;
-    });
+    _checkKeyboardAction();
 
     return Scaffold(
       appBar: AppBar(
@@ -136,6 +134,18 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
         ),
       ),
     );
+  }
+
+  void _checkKeyboardAction() {
+    if (viewModel.useKeyboardAction) {
+      setState(() {
+        _keyboardVisible = MediaQuery.of(context).viewInsets.vertical > 0;
+      });
+    } else {
+      setState(() {
+        _keyboardVisible = false;
+      });
+    }
   }
 
   Widget _buildSavedAt() {
@@ -428,13 +438,6 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
     viewModel.currentNote.content = noteController.text;
 
     await viewModel.saveNote(viewModel.currentNote);
-  }
-
-  _onKeyboardVisibility(bool visible) {
-    setState(() {
-      this._keyboardVisible = visible;
-    });
-    _log.d('_onKeyboardVisibility -> $_keyboardVisible');
   }
 
   void addCharacterAndMoveCaret({

@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:logger/logger.dart';
 import 'package:next_page/core/logger.dart';
-import 'package:next_page/custom_theme.dart';
 import 'package:next_page/themes.dart';
 import 'package:provider_architecture/provider_architecture.dart';
 import 'package:responsive_builder/responsive_builder.dart';

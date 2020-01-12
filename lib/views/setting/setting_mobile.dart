@@ -117,51 +117,14 @@ class __SettingMobileState extends State<_SettingMobile> {
             ),
             ListTile(
               title: Text('Select Theme'),
-              trailing: Text(''),
+              trailing: Text(viewModel.theme.toUpperCase()),
               onTap: () {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return SimpleDialog(
                       title: Text('Choose Theme'),
-                      children: <Widget>[
-                        SimpleDialogOption(
-                          child: Text('Light'),
-                          onPressed: () {
-                            MyThemes.changeTheme(context, MyThemeKeys.LIGHT);
-                            viewModel.theme =
-                                MyThemes.getThemeString(MyThemeKeys.LIGHT);
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        SimpleDialogOption(
-                          child: Text('Blue'),
-                          onPressed: () {
-                            MyThemes.changeTheme(context, MyThemeKeys.BLUE);
-                            viewModel.theme =
-                                MyThemes.getThemeString(MyThemeKeys.BLUE);
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        SimpleDialogOption(
-                          child: Text('Dark'),
-                          onPressed: () {
-                            MyThemes.changeTheme(context, MyThemeKeys.DARK);
-                            viewModel.theme =
-                                MyThemes.getThemeString(MyThemeKeys.DARK);
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        SimpleDialogOption(
-                          child: Text('Darker'),
-                          onPressed: () {
-                            MyThemes.changeTheme(context, MyThemeKeys.DARKER);
-                            viewModel.theme =
-                                MyThemes.getThemeString(MyThemeKeys.DARKER);
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
+                      children: _buildSimpleOptions(context),
                     );
                   },
                 );
@@ -170,6 +133,22 @@ class __SettingMobileState extends State<_SettingMobile> {
           ],
         ),
       ),
+    );
+  }
+
+  List<Widget> _buildSimpleOptions(BuildContext context) {
+    return MyThemes.list.map((theme) => _buildThemeOption(theme)).toList();
+  }
+
+  SimpleDialogOption _buildThemeOption(String themeName) {
+    MyThemeKeys theme = MyThemes.getThemeFromStringKey(themeName);
+    return SimpleDialogOption(
+      child: Text(themeName.toUpperCase()),
+      onPressed: () {
+        MyThemes.changeTheme(context, theme);
+        viewModel.theme = MyThemes.getThemeString(theme);
+        Navigator.of(context).pop();
+      },
     );
   }
 }

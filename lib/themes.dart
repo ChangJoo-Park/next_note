@@ -4,6 +4,8 @@ import 'package:next_page/custom_theme.dart';
 enum MyThemeKeys { LIGHT, BLUE, DARK, DARKER }
 
 class MyThemes {
+  static List<String> list = ['light', 'blue', 'dark', 'darker'];
+
   static final ThemeData lightTheme = ThemeData(
     primaryColor: Colors.white,
     accentColor: Colors.black,
@@ -56,10 +58,6 @@ class MyThemes {
     }
   }
 
-  static void changeTheme(BuildContext buildContext, MyThemeKeys key) {
-    CustomTheme.instanceOf(buildContext).changeTheme(key);
-  }
-
   static getThemeString(MyThemeKeys themeKey) {
     switch (themeKey) {
       case MyThemeKeys.LIGHT:
@@ -73,5 +71,9 @@ class MyThemes {
       default:
         return 'unknown';
     }
+  }
+
+  static void changeTheme(BuildContext buildContext, MyThemeKeys key) {
+    CustomTheme.instanceOf(buildContext).changeTheme(key);
   }
 }

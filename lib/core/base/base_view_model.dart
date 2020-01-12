@@ -15,7 +15,6 @@ class BaseViewModel extends ChangeNotifier {
   // Settings
   bool _useAuthentication;
   bool _useKeyboardAction;
-  ThemeData _themeData;
   String _theme;
 
   BaseViewModel({
@@ -73,13 +72,7 @@ class BaseViewModel extends ChangeNotifier {
     return Future.value(true);
   }
 
-  get themeData => _themeData;
-  set themeData(ThemeData value) {
-    _themeData = value;
-    notifyListeners();
-  }
-
-  get theme => _theme;
+  String get theme => _theme;
   set theme(String value) {
     _theme = value;
     notifyListeners();

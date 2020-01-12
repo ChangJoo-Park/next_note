@@ -106,7 +106,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
               elevation: 0,
               heroTag: 'fab',
               icon: Icon(Icons.save),
-              label: Text('저장'),
+              label: Text('Save'),
               onPressed: () async {
                 await _saveNote();
               },
@@ -122,7 +122,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
         child: Stack(
           children: <Widget>[
             Container(
-              padding: EdgeInsets.all(16.0),
+              padding: EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
               child: Column(
                 children: <Widget>[
                   _buildTextFieldWidget(),

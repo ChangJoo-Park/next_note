@@ -1,6 +1,6 @@
 name: next_page
 description: A new Flutter markdown note application.
-version: 0.5.2+1
+version: 0.6.0+1
 environment:
     sdk: '>=2.3.0 <3.0.0'
 dependencies:
@@ -26,6 +26,8 @@ dependencies:
     local_auth: ^0.6.1
     share: ^0.6.3+5
     open_appstore: ^1.0.2
+    intl: ^0.16.1
+    flutter_translate: ^1.5.7
 
 dev_dependencies:
     flutter_test:

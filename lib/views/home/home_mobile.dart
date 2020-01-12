@@ -26,75 +26,15 @@ class __HomeMobileState extends State<_HomeMobile> {
   @protected
   void initState() {
     super.initState();
-
-    // _listener = KeyboardVisibilityNotification().addNewListener(
-    //   onChange: _onKeyboardVisibility,
-    // );
   }
 
   @override
   void dispose() {
-    // if (_debounce != null) {
-    //   _debounce.cancel();
-    //   _debounce = null;
-    // }
-
-    // KeyboardVisibilityNotification().removeListener(_listener);
-
     super.dispose();
   }
 
-  // _onKeyboardVisibility(bool visible) {
-  //   setState(() {
-  //     this._keyboardVisible = visible;
-  //   });
-  //   if (!this._keyboardVisible) {
-  //     _onNoteChanged();
-  //   }
-  // }
-
-  // void _onNoteChanged({String value}) {
-  //   if (viewModel.currentNote == null) {
-  //     return;
-  //   }
-  //   if (_debounce?.isActive ?? false) _debounce.cancel();
-  //   _debounce = Timer(const Duration(milliseconds: 1000), () async {
-  //     viewModel.currentNote.content = noteController.text;
-  //     await viewModel.updateNote(viewModel.currentNote);
-  //     _log.d('#onNoteChanged -> updated');
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
-    // var childButtons = List<UnicornButton>();
-
-    // childButtons.add(
-    //   UnicornButton(
-    //     currentButton: FloatingActionButton(
-    //       heroTag: "new-note",
-    //       backgroundColor: Colors.redAccent,
-    //       mini: true,
-    //       child: Icon(FontAwesomeIcons.plus),
-    //       onPressed: () {
-    //         openNewNoteModal(context);
-    //       },
-    //     ),
-    //   ),
-    // );
-
-    // childButtons.add(
-    //   UnicornButton(
-    //     currentButton: FloatingActionButton(
-    //       heroTag: "airplane",
-    //       backgroundColor: Colors.greenAccent,
-    //       mini: true,
-    //       child: Icon(FontAwesomeIcons.file),
-    //       onPressed: () {},
-    //     ),
-    //   ),
-    // );
-
     return Scaffold(
       resizeToAvoidBottomPadding: true,
       appBar: _keyboardVisible ? null : buildAppBar(),
@@ -149,7 +89,7 @@ class __HomeMobileState extends State<_HomeMobile> {
         isExtended: true,
         elevation: 0,
         heroTag: 'fab',
-        label: Text('새 노트'),
+        label: Text('New Note'),
         icon: Icon(Icons.add),
         onPressed: () {
           _openNewNoteModal(context);
@@ -189,7 +129,7 @@ class __HomeMobileState extends State<_HomeMobile> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('새 노트'),
+            title: Text('New Note'),
             content: Form(
               key: _newNoteFormKey,
               child: TextFormField(

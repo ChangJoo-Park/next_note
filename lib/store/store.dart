@@ -1,5 +1,4 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:dotenv/dotenv.dart' show env;
 
 enum Environment { TEST, DEVELOPMENT, PRODUCTION }
 

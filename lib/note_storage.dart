@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:logger/logger.dart';
-import 'package:next_page/core/logger.dart';
+
 import 'package:path_provider/path_provider.dart';
 
 class NoteStorage {
-  Logger _log = getLogger('NoteStorage');
+  // Logger _log = getLogger('NoteStorage');
   Directory _localDirectory;
   String _localPath;
   Future _doneInitialize;
@@ -37,8 +36,6 @@ class NoteStorage {
       return null;
     }
   }
-
-  FileStat getFileStat(filePath) {}
 
   Future<File> writeFile(String filename, String content) async {
     final file = _localFile(filename);

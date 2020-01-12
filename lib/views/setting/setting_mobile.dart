@@ -9,15 +9,15 @@ class _SettingMobile extends StatefulWidget {
 }
 
 class __SettingMobileState extends State<_SettingMobile> {
-  Logger _log = getLogger('_SettingMobile');
+  // Logger _log = getLogger('_SettingMobile');
   final SettingViewModel viewModel;
   bool fingerprint = false;
   final LocalAuthentication auth = LocalAuthentication();
   bool _canCheckBiometrics;
-  List<BiometricType> _availableBiometrics;
-  String _authorized = 'Not Authorized';
-  bool _isAuthenticating = false;
-  bool _keyboardAction = false;
+  // List<BiometricType> _availableBiometrics;
+  // String _authorized = 'Not Authorized';
+  // bool _isAuthenticating = false;
+  // bool _keyboardAction = false;
 
   Future<void> _checkBiometrics() async {
     bool canCheckBiometrics;
@@ -33,50 +33,50 @@ class __SettingMobileState extends State<_SettingMobile> {
     });
   }
 
-  Future<void> _getAvailableBiometrics() async {
-    List<BiometricType> availableBiometrics;
-    try {
-      availableBiometrics = await auth.getAvailableBiometrics();
-    } on PlatformException catch (e) {
-      print(e);
-    }
-    if (!mounted) return;
+  // Future<void> _getAvailableBiometrics() async {
+  //   List<BiometricType> availableBiometrics;
+  //   try {
+  //     availableBiometrics = await auth.getAvailableBiometrics();
+  //   } on PlatformException catch (e) {
+  //     print(e);
+  //   }
+  //   if (!mounted) return;
 
-    setState(() {
-      _availableBiometrics = availableBiometrics;
-    });
-  }
+  //   setState(() {
+  //     _availableBiometrics = availableBiometrics;
+  //   });
+  // }
 
   Future<void> _authenticate() async {
-    bool authenticated = false;
-    try {
-      setState(() {
-        _isAuthenticating = true;
-        _authorized = 'Authenticating';
-      });
-      authenticated = await auth.authenticateWithBiometrics(
-        localizedReason: 'Scan your fingerprint to authenticate',
-        useErrorDialogs: true,
-        stickyAuth: true,
-      );
-      setState(() {
-        _isAuthenticating = false;
-        _authorized = 'Authenticating';
-      });
-    } on PlatformException catch (e) {
-      print(e);
-    }
-    if (!mounted) return;
+    // bool authenticated = false;
+    // try {
+    //   setState(() {
+    //     _isAuthenticating = true;
+    //     _authorized = 'Authenticating';
+    //   });
+    //   authenticated = await auth.authenticateWithBiometrics(
+    //     localizedReason: 'Scan your fingerprint to authenticate',
+    //     useErrorDialogs: true,
+    //     stickyAuth: true,
+    //   );
+    //   setState(() {
+    //     _isAuthenticating = false;
+    //     _authorized = 'Authenticating';
+    //   });
+    // } on PlatformException catch (e) {
+    //   print(e);
+    // }
+    // if (!mounted) return;
 
-    final String message = authenticated ? 'Authorized' : 'Not Authorized';
-    setState(() {
-      _authorized = message;
-    });
+    // final String message = authenticated ? 'Authorized' : 'Not Authorized';
+    // setState(() {
+    //   _authorized = message;
+    // });
   }
 
-  void _cancelAuthentication() {
-    auth.stopAuthentication();
-  }
+  // void _cancelAuthentication() {
+  //   auth.stopAuthentication();
+  // }
 
   __SettingMobileState(this.viewModel);
 
@@ -117,51 +117,14 @@ class __SettingMobileState extends State<_SettingMobile> {
             ),
             ListTile(
               title: Text('Select Theme'),
-              trailing: Text(''),
+              trailing: Text(StringUtils.capitalize(text: viewModel.theme)),
               onTap: () {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return SimpleDialog(
                       title: Text('Choose Theme'),
-                      children: <Widget>[
-                        SimpleDialogOption(
-                          child: Text('Light'),
-                          onPressed: () {
-                            MyThemes.changeTheme(context, MyThemeKeys.LIGHT);
-                            viewModel.theme =
-                                MyThemes.getThemeString(MyThemeKeys.LIGHT);
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        SimpleDialogOption(
-                          child: Text('Blue'),
-                          onPressed: () {
-                            MyThemes.changeTheme(context, MyThemeKeys.BLUE);
-                            viewModel.theme =
-                                MyThemes.getThemeString(MyThemeKeys.BLUE);
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        SimpleDialogOption(
-                          child: Text('Dark'),
-                          onPressed: () {
-                            MyThemes.changeTheme(context, MyThemeKeys.DARK);
-                            viewModel.theme =
-                                MyThemes.getThemeString(MyThemeKeys.DARK);
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        SimpleDialogOption(
-                          child: Text('Darker'),
-                          onPressed: () {
-                            MyThemes.changeTheme(context, MyThemeKeys.DARKER);
-                            viewModel.theme =
-                                MyThemes.getThemeString(MyThemeKeys.DARKER);
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
+                      children: _buildSimpleOptions(context),
                     );
                   },
                 );
@@ -170,6 +133,22 @@ class __SettingMobileState extends State<_SettingMobile> {
           ],
         ),
       ),
+    );
+  }
+
+  List<Widget> _buildSimpleOptions(BuildContext context) {
+    return MyThemes.list.map((theme) => _buildThemeOption(theme)).toList();
+  }
+
+  SimpleDialogOption _buildThemeOption(String themeName) {
+    MyThemeKeys theme = MyThemes.getThemeFromStringKey(themeName);
+    return SimpleDialogOption(
+      child: Text(StringUtils.capitalize(text: themeName)),
+      onPressed: () {
+        MyThemes.changeTheme(context, theme);
+        viewModel.theme = MyThemes.getThemeString(theme);
+        Navigator.of(context).pop();
+      },
     );
   }
 }

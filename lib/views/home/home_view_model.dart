@@ -1,15 +1,14 @@
 import 'dart:io';
 
-import 'package:logger/logger.dart';
+import 'package:flutter/services.dart';
 import 'package:next_page/core/base/base_view_model.dart';
-import 'package:next_page/core/logger.dart';
 import 'package:next_page/models/note.dart';
 import 'package:next_page/note_storage.dart';
 import 'package:path/path.dart' as path;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeViewModel extends BaseViewModel {
-  Logger _log = getLogger('HomeViewModel');
+  // Logger _log = getLogger('HomeViewModel');
   NoteStorage _noteStorage;
   List<Note> _items = [];
   Note _currentNote;
@@ -21,6 +20,16 @@ class HomeViewModel extends BaseViewModel {
     _noteStorage = NoteStorage();
 
     await _noteStorage.initializationDone;
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey('initialized') && prefs.getBool('initialized')) {
+    } else {
+      await prefs.setBool('initialized', true);
+      _noteStorage.writeFile(
+        'getting-started.md',
+        await rootBundle.loadString('assets/notes/getting-started.md'),
+      );
+    }
 
     _loadNotes();
 

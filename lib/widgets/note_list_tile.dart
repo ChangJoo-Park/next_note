@@ -31,9 +31,9 @@ class NoteListTile extends StatelessWidget {
         child: Material(
           type: MaterialType.transparency,
           child: Text(
-            formatDate(
-                    note.changed, [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn]) +
-                ' 저장함 ',
+            'Saved at ' +
+                formatDate(
+                    note.changed, [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn]),
           ),
         ),
       ),

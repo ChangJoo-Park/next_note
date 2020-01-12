@@ -117,7 +117,7 @@ class __SettingMobileState extends State<_SettingMobile> {
             ),
             ListTile(
               title: Text('Select Theme'),
-              trailing: Text(viewModel.theme.toUpperCase()),
+              trailing: Text(StringUtils.capitalize(text: viewModel.theme)),
               onTap: () {
                 showDialog(
                   context: context,
@@ -143,7 +143,7 @@ class __SettingMobileState extends State<_SettingMobile> {
   SimpleDialogOption _buildThemeOption(String themeName) {
     MyThemeKeys theme = MyThemes.getThemeFromStringKey(themeName);
     return SimpleDialogOption(
-      child: Text(themeName.toUpperCase()),
+      child: Text(StringUtils.capitalize(text: themeName)),
       onPressed: () {
         MyThemes.changeTheme(context, theme);
         viewModel.theme = MyThemes.getThemeString(theme);

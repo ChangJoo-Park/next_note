@@ -149,7 +149,7 @@ class __HomeMobileState extends State<_HomeMobile> {
         isExtended: true,
         elevation: 0,
         heroTag: 'fab',
-        label: Text('새 노트'),
+        label: Text('New Note'),
         icon: Icon(Icons.add),
         onPressed: () {
           _openNewNoteModal(context);
@@ -189,7 +189,7 @@ class __HomeMobileState extends State<_HomeMobile> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('새 노트'),
+            title: Text('New Note'),
             content: Form(
               key: _newNoteFormKey,
               child: TextFormField(

@@ -159,11 +159,9 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
         tag: 'note-subtitle-${widget.viewModel.currentNote.fileName}',
         child: Material(
           type: MaterialType.transparency,
-          child: Text(
-            formatDate(viewModel.currentNote.changed,
-                    [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn]) +
-                ' 저장함 ',
-          ),
+          child: Text('Saved at ' +
+              formatDate(viewModel.currentNote.changed,
+                  [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn])),
         ),
       ),
     );

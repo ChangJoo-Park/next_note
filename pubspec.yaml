@@ -26,6 +26,8 @@ dependencies:
     local_auth: ^0.6.1
     share: ^0.6.3+5
     open_appstore: ^1.0.2
+    intl: ^0.16.1
+    flutter_translate: ^1.5.7
 
 dev_dependencies:
     flutter_test:

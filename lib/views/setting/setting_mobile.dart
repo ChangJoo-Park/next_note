@@ -9,15 +9,15 @@ class _SettingMobile extends StatefulWidget {
 }
 
 class __SettingMobileState extends State<_SettingMobile> {
-  Logger _log = getLogger('_SettingMobile');
+  // Logger _log = getLogger('_SettingMobile');
   final SettingViewModel viewModel;
   bool fingerprint = false;
   final LocalAuthentication auth = LocalAuthentication();
   bool _canCheckBiometrics;
-  List<BiometricType> _availableBiometrics;
-  String _authorized = 'Not Authorized';
-  bool _isAuthenticating = false;
-  bool _keyboardAction = false;
+  // List<BiometricType> _availableBiometrics;
+  // String _authorized = 'Not Authorized';
+  // bool _isAuthenticating = false;
+  // bool _keyboardAction = false;
 
   Future<void> _checkBiometrics() async {
     bool canCheckBiometrics;
@@ -33,50 +33,50 @@ class __SettingMobileState extends State<_SettingMobile> {
     });
   }
 
-  Future<void> _getAvailableBiometrics() async {
-    List<BiometricType> availableBiometrics;
-    try {
-      availableBiometrics = await auth.getAvailableBiometrics();
-    } on PlatformException catch (e) {
-      print(e);
-    }
-    if (!mounted) return;
+  // Future<void> _getAvailableBiometrics() async {
+  //   List<BiometricType> availableBiometrics;
+  //   try {
+  //     availableBiometrics = await auth.getAvailableBiometrics();
+  //   } on PlatformException catch (e) {
+  //     print(e);
+  //   }
+  //   if (!mounted) return;
 
-    setState(() {
-      _availableBiometrics = availableBiometrics;
-    });
-  }
+  //   setState(() {
+  //     _availableBiometrics = availableBiometrics;
+  //   });
+  // }
 
   Future<void> _authenticate() async {
-    bool authenticated = false;
-    try {
-      setState(() {
-        _isAuthenticating = true;
-        _authorized = 'Authenticating';
-      });
-      authenticated = await auth.authenticateWithBiometrics(
-        localizedReason: 'Scan your fingerprint to authenticate',
-        useErrorDialogs: true,
-        stickyAuth: true,
-      );
-      setState(() {
-        _isAuthenticating = false;
-        _authorized = 'Authenticating';
-      });
-    } on PlatformException catch (e) {
-      print(e);
-    }
-    if (!mounted) return;
+    // bool authenticated = false;
+    // try {
+    //   setState(() {
+    //     _isAuthenticating = true;
+    //     _authorized = 'Authenticating';
+    //   });
+    //   authenticated = await auth.authenticateWithBiometrics(
+    //     localizedReason: 'Scan your fingerprint to authenticate',
+    //     useErrorDialogs: true,
+    //     stickyAuth: true,
+    //   );
+    //   setState(() {
+    //     _isAuthenticating = false;
+    //     _authorized = 'Authenticating';
+    //   });
+    // } on PlatformException catch (e) {
+    //   print(e);
+    // }
+    // if (!mounted) return;
 
-    final String message = authenticated ? 'Authorized' : 'Not Authorized';
-    setState(() {
-      _authorized = message;
-    });
+    // final String message = authenticated ? 'Authorized' : 'Not Authorized';
+    // setState(() {
+    //   _authorized = message;
+    // });
   }
 
-  void _cancelAuthentication() {
-    auth.stopAuthentication();
-  }
+  // void _cancelAuthentication() {
+  //   auth.stopAuthentication();
+  // }
 
   __SettingMobileState(this.viewModel);
 

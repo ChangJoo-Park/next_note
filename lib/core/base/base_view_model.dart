@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../logger.dart';
 
 class BaseViewModel extends ChangeNotifier {
-  Logger _log = getLogger('BaseViewModel');
+  // Logger _log = getLogger('BaseViewModel');
 
   SharedPreferences prefs;
   String _title;

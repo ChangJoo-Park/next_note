@@ -1,19 +1,18 @@
 library setting_view;
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:logger/logger.dart';
-import 'package:next_page/core/logger.dart';
 import 'package:next_page/themes.dart';
 import 'package:next_page/utils/string_utils.dart';
 import 'package:provider_architecture/provider_architecture.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:flutter/material.dart';
+
 import 'setting_view_model.dart';
 
+part 'setting_desktop.dart';
 part 'setting_mobile.dart';
 part 'setting_tablet.dart';
-part 'setting_desktop.dart';
 
 class SettingView extends StatelessWidget {
   @override

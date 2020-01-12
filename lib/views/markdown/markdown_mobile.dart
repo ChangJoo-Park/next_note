@@ -12,7 +12,12 @@ class _MarkdownMobile extends StatelessWidget {
         elevation: 0,
         title: Text('Viewer'),
       ),
-      body: SafeArea(child: Markdown(data: viewModel.content)),
+      body: SafeArea(
+        child: Markdown(
+          data: viewModel.content,
+          selectable: true,
+        ),
+      ),
     );
   }
 }

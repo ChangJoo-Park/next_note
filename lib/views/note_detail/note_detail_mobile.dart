@@ -122,7 +122,6 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
         child: Stack(
           children: <Widget>[
             Container(
-              padding: EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
               child: Column(
                 children: <Widget>[
                   _buildTextFieldWidget(),
@@ -173,7 +172,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
       child: Expanded(
         flex: 1,
         child: Padding(
-          padding: const EdgeInsets.only(bottom: 24.0),
+          padding: const EdgeInsets.only(bottom: 24),
           child: Form(
             key: _formKey,
             child: TextField(
@@ -183,6 +182,8 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
               decoration: InputDecoration(
                 hintText: "Insert your message",
                 border: InputBorder.none,
+                contentPadding:
+                    EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
               ),
               scrollPadding: EdgeInsets.all(20.0),
               keyboardType: TextInputType.multiline,

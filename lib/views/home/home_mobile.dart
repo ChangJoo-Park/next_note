@@ -60,16 +60,19 @@ class __HomeMobileState extends State<_HomeMobile> {
                   (BuildContext ctx, int index, Animation<double> animation) {
                 Note note = viewModel.sortByUpdatedItems[index];
                 return FadeTransition(
+                  key: ValueKey('fade-transition-${note.filePath}'),
                   opacity: Tween<double>(
                     begin: 0,
                     end: 1,
                   ).animate(animation),
                   child: SlideTransition(
+                    key: ValueKey('slide-transition-${note.filePath}'),
                     position: Tween<Offset>(
                       begin: Offset(0, -0.1),
                       end: Offset.zero,
                     ).animate(animation),
                     child: NoteListTile(
+                      key: ValueKey(note.filePath),
                       note: note,
                       onTap: () {
                         _openNote(note);

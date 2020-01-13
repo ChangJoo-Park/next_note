@@ -20,7 +20,10 @@ class BottomStickyActionBar extends StatelessWidget {
         height: 40,
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
-          decoration: BoxDecoration(border: Border(top: BorderSide())),
+          decoration: BoxDecoration(
+            border: Border(top: BorderSide()),
+            color: Theme.of(context).primaryColor,
+          ),
           width: MediaQuery.of(context).size.width,
           child: ListView(scrollDirection: Axis.horizontal, children: children),
         ),

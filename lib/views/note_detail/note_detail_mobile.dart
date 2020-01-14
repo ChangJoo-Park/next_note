@@ -117,7 +117,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
           _cancelDebounce();
           _log.d('Saved when pop');
           await _saveNote();
-          return Future.value(true);
+          return true;
         },
         child: Stack(
           children: <Widget>[

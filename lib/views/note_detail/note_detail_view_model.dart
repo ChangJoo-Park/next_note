@@ -16,7 +16,6 @@ class NoteDetailViewModel extends BaseViewModel {
 
   Note get currentNote => _currentNote;
 
-  // Add ViewModel specific code here
   Future<bool> initialize() async {
     _noteStorage = NoteStorage();
     await _noteStorage.initializationDone;
@@ -24,7 +23,10 @@ class NoteDetailViewModel extends BaseViewModel {
   }
 
   Future saveNote(Note note) async {
-    File file = await _noteStorage.writeFile(note.fileName, note.content);
+    String yamlContent = '''---
+title: ${note.title}
+---${note.content}''';
+    File file = await _noteStorage.writeFile(note.fileName, yamlContent);
     FileStat stat = file.statSync();
     _currentNote.modified = stat.modified;
     _currentNote.accessed = stat.accessed;

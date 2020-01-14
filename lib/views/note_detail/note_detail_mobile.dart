@@ -15,13 +15,14 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
   final Logger _log = getLogger('_NoteDetailMobile');
   bool _keyboardVisible = false;
   final _formKey = GlobalKey<FormState>();
+  final _renameFormKey = GlobalKey<FormState>();
   final FocusNode noteFocusNode =
       FocusNode(debugLabel: 'NOTE_FOCUS_NODE', canRequestFocus: true);
   final TextEditingController noteController = TextEditingController();
   Timer _debounce;
   AppLifecycleState _notification;
   __NoteDetailMobileState(this.viewModel);
-
+  String newTitle;
   @override
   initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -255,7 +256,57 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
         child: Material(
           type: MaterialType.transparency,
           child: GestureDetector(
-            onLongPress: () {},
+            onTap: () {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('Rename'),
+                      content: Container(
+                        child: Form(
+                          key: _renameFormKey,
+                          autovalidate: true,
+                          child: TextFormField(
+                            onSaved: (String value) {
+                              setState(() {
+                                newTitle = value;
+                              });
+                            },
+                            validator: (String value) {
+                              if (value.isEmpty) {
+                                return 'Please enter title of note';
+                              } else
+                                return null;
+                            },
+                            initialValue: widget.viewModel.currentNote.title,
+                          ),
+                        ),
+                      ),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('Change Title'),
+                          onPressed: () async {
+                            if (_renameFormKey.currentState.validate()) {
+                              _renameFormKey.currentState.save();
+                              _cancelDebounce();
+                              await _saveNote(title: newTitle);
+                            }
+                            Navigator.of(context).pop();
+                            setState(() {
+                              newTitle = '';
+                            });
+                          },
+                        ),
+                        FlatButton(
+                          child: Text('Dismiss'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  });
+            },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
               decoration: BoxDecoration(
@@ -263,7 +314,7 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
                 color: Colors.grey,
               ),
               child: Text(
-                widget.viewModel.currentNote.fileName,
+                widget.viewModel.currentNote.title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
@@ -433,7 +484,11 @@ class __NoteDetailMobileState extends State<_NoteDetailMobile>
     });
   }
 
-  Future _saveNote() async {
+  Future _saveNote({String title}) async {
+    if (title == null) {
+      title = viewModel.currentNote.title;
+    }
+    viewModel.currentNote.title = title;
     viewModel.currentNote.content = noteController.text;
 
     await viewModel.saveNote(viewModel.currentNote);

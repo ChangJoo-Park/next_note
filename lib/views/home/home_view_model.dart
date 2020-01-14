@@ -79,8 +79,11 @@ class HomeViewModel extends BaseViewModel {
   Note get currentNote => this._currentNote;
   set currentNote(Note note) {
     this._currentNote = note;
-    this._currentNote.content =
-        _noteStorage.readFile(note.fileName).readAsStringSync();
+    fm.FrontMatterDocument doc =
+        fm.parse(_noteStorage.readFile(note.fileName).readAsStringSync());
+
+    this._currentNote.title = note.title;
+    this._currentNote.content = doc.content;
     notifyListeners();
   }
 
@@ -99,7 +102,9 @@ class HomeViewModel extends BaseViewModel {
   createNewNote(String fileName) async {
     String content = '''---
 title: $fileName
----''';
+---
+
+''';
     await _noteStorage.writeFile(fileName, content);
     _loadNotes();
     notifyListeners();

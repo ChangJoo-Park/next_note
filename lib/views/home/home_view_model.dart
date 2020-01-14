@@ -6,6 +6,7 @@ import 'package:next_page/models/note.dart';
 import 'package:next_page/note_storage.dart';
 import 'package:path/path.dart' as path;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:front_matter/front_matter.dart' as fm;
 
 class HomeViewModel extends BaseViewModel {
   // Logger _log = getLogger('HomeViewModel');
@@ -43,32 +44,46 @@ class HomeViewModel extends BaseViewModel {
     this.currentNoteStatus = value;
   }
 
-  void _loadNotes() {
+  void _loadNotes() async {
     List<FileSystemEntity> files = _noteStorage.readDirectory();
+    // FIXME: 성능 문제 여지가 있음
     this._items = files
         .where((fileEntity) => fileEntity.path.contains('.md'))
         .map((markdownFileEntity) => File(markdownFileEntity.path))
-        .map(
-      (markdownFile) {
-        FileStat noteFileStat = markdownFile.statSync();
-        return Note(
-          filePath: markdownFile.path,
-          fileName: path.basename(markdownFile.path),
-          content: '',
-          accessed: noteFileStat.accessed,
-          changed: noteFileStat.changed,
-          modified: noteFileStat.modified,
-          size: noteFileStat.size,
-        );
-      },
-    ).toList();
+        .map(_loadMarkdown)
+        .toList();
+  }
+
+  Note _loadMarkdown(markdownFile) {
+    String fileContents = markdownFile.readAsStringSync();
+    fm.FrontMatterDocument doc = fm.parse(fileContents);
+
+    FileStat noteFileStat = markdownFile.statSync();
+    String title = path.basename(markdownFile.path);
+    try {
+      title = doc?.data['title'];
+    } catch (e) {}
+
+    return Note(
+      title: title,
+      filePath: markdownFile.path,
+      fileName: path.basename(markdownFile.path),
+      content: '',
+      accessed: noteFileStat.accessed,
+      changed: noteFileStat.changed,
+      modified: noteFileStat.modified,
+      size: noteFileStat.size,
+    );
   }
 
   Note get currentNote => this._currentNote;
   set currentNote(Note note) {
     this._currentNote = note;
-    this._currentNote.content =
-        _noteStorage.readFile(note.fileName).readAsStringSync();
+    fm.FrontMatterDocument doc =
+        fm.parse(_noteStorage.readFile(note.fileName).readAsStringSync());
+
+    this._currentNote.title = note.title;
+    this._currentNote.content = doc.content;
     notifyListeners();
   }
 
@@ -85,7 +100,12 @@ class HomeViewModel extends BaseViewModel {
   }
 
   createNewNote(String fileName) async {
-    await _noteStorage.writeFile(fileName, '');
+    String content = '''---
+title: $fileName
+---
+
+''';
+    await _noteStorage.writeFile(fileName, content);
     _loadNotes();
     notifyListeners();
   }

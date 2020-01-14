@@ -21,7 +21,7 @@ class NoteListTile extends StatelessWidget {
         child: Material(
           type: MaterialType.transparency,
           child: Text(
-            note.fileName,
+            note.title,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),

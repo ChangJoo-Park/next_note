@@ -1,4 +1,5 @@
 class Note {
+  String title;
   String fileName;
   String filePath;
   String content;
@@ -8,6 +9,7 @@ class Note {
   int size;
 
   Note({
+    this.title,
     this.fileName,
     this.filePath,
     this.content,

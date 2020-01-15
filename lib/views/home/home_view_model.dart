@@ -102,9 +102,7 @@ class HomeViewModel extends BaseViewModel {
   createNewNote(String fileName) async {
     String content = '''---
 title: $fileName
----
-
-''';
+---''';
     await _noteStorage.writeFile(fileName, content);
     _loadNotes();
     notifyListeners();

@@ -90,22 +90,22 @@ class __SettingMobileState extends State<_SettingMobile> {
       body: Container(
         child: Column(
           children: <Widget>[
-            ListTile(
-              title: Text('Use Fingerprint authentication'),
-              trailing: Switch(
-                value: viewModel.useAuthentication,
-                onChanged: (bool value) async {
-                  viewModel.useAuthentication = value;
-                  if (value) {
-                    await _checkBiometrics();
-                    debugPrint('can local auth -> $_canCheckBiometrics');
-                    if (_canCheckBiometrics) {
-                      _authenticate();
-                    }
-                  }
-                },
-              ),
-            ),
+            // ListTile(
+            //   title: Text('Use Fingerprint authentication'),
+            //   trailing: Switch(
+            //     value: viewModel.useAuthentication,
+            //     onChanged: (bool value) async {
+            //       viewModel.useAuthentication = value;
+            //       if (value) {
+            //         await _checkBiometrics();
+            //         debugPrint('can local auth -> $_canCheckBiometrics');
+            //         if (_canCheckBiometrics) {
+            //           _authenticate();
+            //         }
+            //       }
+            //     },
+            //   ),
+            // ),
             ListTile(
               title: Text('Use Keyboard action extension'),
               trailing: Switch(
